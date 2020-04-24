@@ -10,20 +10,23 @@
 #include <iostream>
 #include "vector3/vector3.h"
 
-class ray
-{
+class ray{
 public:
+    ray() {}
+    ray(const vector3& origin, const vector3& direction)
+            : orig(origin), dir(direction)
+    {}
 
-    vector3 A;
-    vector3 B;
+    vector3 origin() const    { return orig; }
+    vector3 direction() const { return dir; }
 
-    ray();
-    ray(const vector3& a, const vector3& b);
-    vector3 origin() const;
-    vector3 direction() const;
-    vector3 point_at_parameter(float t) const;
+    vector3 at(double t) const {
+        return orig + t*dir;
+    }
 
-
+public:
+    vector3 orig;
+    vector3 dir;
 };
 
 #endif //FIRSTRAYTRACER_RAY_H
