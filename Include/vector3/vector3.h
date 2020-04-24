@@ -5,8 +5,8 @@
 #ifndef FIRSTRAYTRACER_VECTOR3_H
 #define FIRSTRAYTRACER_VECTOR3_H
 
-#include <cmath>
-#include <cstdlib>
+#include <math.h>
+#include <stdlib.h>
 #include <iostream>
 
 class vector3
@@ -16,7 +16,7 @@ public:
     /*
      *  Empty constructor for 3D vector
      */
-    vector3();
+    vector3() : e{0, 0, 0} {}
     vector3(double element_0, double element_1, double element_2);
     /*
      *  Getters for position, rgb values of each pixel.
@@ -24,14 +24,10 @@ public:
     double getX() const;
     double getY() const;
     double getZ() const;
-    double getR() const;
-    double getG() const;
-    double getB() const;
 
     /*
      *  Defining basic arithmetic for a vector
      */
-    const vector3& operator + () const;
     vector3 operator - () const;
     double operator[](int index) const;
     // Overriding?
@@ -57,7 +53,9 @@ public:
      *  Returns the Euclidean Norm and its square.
      */
     double length() const;
-    double squared_length() const;
+    double length_squared() const;
+
+    void write_color(std::ostream &out);
 
     // Creates an unit vector
     void make_unit_vector();
@@ -70,15 +68,16 @@ public:
     vector3 operator + (const vector3 &v1, const vector3 &v2);
     vector3 operator - (const vector3 &v1, const vector3 &v2);
     vector3 operator * (const vector3 &v1, const vector3 &v2);
-    vector3 operator / (const vector3 &v1, const vector3 &v2);
 
     vector3 operator * (double t, const vector3 &v);
-    vector3 operator / (const vector3 &v, double t);
+    vector3 operator * (const vector3 &v, double t);
+    vector3 operator / (vector3 v, double t);
+    vector3 unit_vector(vector3 v);
 
     double dot_product(const vector3 &v1, const vector3 &v2);
     vector3 cross_product(const vector3 &v1, const vector3 &v2);
 
-    vector3 unit_vector(vector3 v);
+
 
 
 #endif //FIRSTRAYTRACER_VECTOR3_H
