@@ -13,16 +13,12 @@
 class ray{
 public:
     ray() {}
-    ray(const vector3& origin, const vector3& direction)
-            : orig(origin), dir(direction)
-    {}
+    ray(const vector3& origin, const vector3& direction);
 
-    vector3 origin() const    { return orig; }
-    vector3 direction() const { return dir; }
+    vector3 origin() const;
+    vector3 direction() const;
 
-    vector3 at(double t) const {
-        return orig + t*dir;
-    }
+    vector3 at(double t) const;
 
 public:
     vector3 orig;
