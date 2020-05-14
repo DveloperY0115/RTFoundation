@@ -65,6 +65,9 @@ public:
 
 };
 
+using point3 = vector3;   // 3D point
+using color = vector3;   // RGB color
+
     vector3 operator + (const vector3 &v1, const vector3 &v2);
     vector3 operator - (const vector3 &v1, const vector3 &v2);
     vector3 operator * (const vector3 &v1, const vector3 &v2);
