@@ -2,9 +2,9 @@
 // Created by 유승우 on 2020/04/27.
 //
 
-#include "hittable/hittable.h"
-#include "geometry/sphere.h"
-#include "vector3/vector3.h"
+#include "../Include/hittable/hittable.h"
+#include "../Include/geometry/sphere.h"
+#include "../Include/vector3/vector3.h"
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
 {
@@ -18,6 +18,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     // sphere is hit by the ray
     if (discriminant > 0)
     {
+        // Solve for the solution that contains the actual parameter to get the point.
         auto root = sqrt(discriminant);
         auto temp = (-half_b - root) / a;
         if (temp < t_max && temp > t_min)

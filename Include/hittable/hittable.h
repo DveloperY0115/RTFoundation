@@ -5,7 +5,7 @@
 #ifndef FIRSTRAYTRACER_HITTABLE_H
 #define FIRSTRAYTRACER_HITTABLE_H
 
-#include "ray/ray.h"
+#include "../Include/ray/ray.h"
 
 struct hit_record
 {
@@ -23,6 +23,7 @@ struct hit_record
     }
 
 };
+
 
 class hittable
 {

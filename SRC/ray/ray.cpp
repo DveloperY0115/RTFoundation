@@ -3,8 +3,8 @@
 //
 
 #include <iostream>
-#include "ray/ray.h"
-#include "vector3/vector3.h"
+#include "../Include/ray/ray.h"
+#include "../Include/vector3/vector3.h"
 
 ray::ray(const vector3& origin, const vector3& direction)
         : orig(origin), dir(direction)

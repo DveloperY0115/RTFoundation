@@ -5,11 +5,15 @@
 #ifndef FIRSTRAYTRACER_SPHERE_H
 #define FIRSTRAYTRACER_SPHERE_H
 
-#include "hittable/hittable.h"
-#include "vector3/vector3.h"
+#include "../Include/hittable/hittable.h"
+#include "../Include/vector3/vector3.h"
 
 class sphere: public hittable
 {
+    /*
+     * Note that sphere class inherits only the 'hit' function in this class.
+     * The use of hit_record is allowed because the header is included.
+     */
 public:
     sphere() {}
     sphere(point3 cen, double r) : center(cen), radius(r) {};
