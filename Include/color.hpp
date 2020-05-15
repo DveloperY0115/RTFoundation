@@ -1,10 +1,13 @@
 //
-// Created by 유승우 on 2020/05/15.
+// Created by 유승우 on 2020/05/14.
 //
 
+#ifndef FIRSTRAYTRACER_COLOR_HPP
+#define FIRSTRAYTRACER_COLOR_HPP
+
+#include "vector3/vector3.hpp"
+
 #include <iostream>
-#include "../Include/rtweekend.h"
-#include "../Include/color.h"
 
 void write_color(std::ostream &out, color pixel_color, int samples_per_pixel)
 {
@@ -23,3 +26,6 @@ void write_color(std::ostream &out, color pixel_color, int samples_per_pixel)
         << static_cast<int>(256 * clamp(g, 0.0, 0.999)) << ' '
         << static_cast<int>(256 * clamp(b, 0.0, 0.999)) << '\n';
 }
+
+
+#endif //FIRSTRAYTRACER_COLOR_HPP

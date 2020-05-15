@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_RTWEEKEND_H
-#define FIRSTRAYTRACER_RTWEEKEND_H
+#ifndef FIRSTRAYTRACER_RTWEEKEND_HPP
+#define FIRSTRAYTRACER_RTWEEKEND_HPP
 
 #include <cmath>
 #include <cstdlib>
@@ -38,6 +38,7 @@ inline double modern_random_double()
     static std::mt19937 generator;
     static std::function<double()> rand_generator =
             std::bind(distribution, generator);
+
     return rand_generator();
 }
 
@@ -59,8 +60,7 @@ inline double degress_to_radians(double degrees)
 }
 
 // Common Headers
+#include "ray/ray.hpp"
+#include "vector3/vector3.hpp"
 
-#include "ray/ray.h"
-#include "vector3/vector3.h"
-
-#endif //FIRSTRAYTRACER_RTWEEKEND_H
+#endif //FIRSTRAYTRACER_RTWEEKEND_HPP

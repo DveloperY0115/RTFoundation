@@ -2,10 +2,10 @@
 // Created by 유승우 on 2020/04/27.
 //
 
-#ifndef FIRSTRAYTRACER_HITTABLE_H
-#define FIRSTRAYTRACER_HITTABLE_H
+#ifndef FIRSTRAYTRACER_HITTABLE_HPP
+#define FIRSTRAYTRACER_HITTABLE_HPP
 
-#include "../Include/ray/ray.h"
+#include "ray/ray.hpp"
 
 struct hit_record
 {
@@ -32,4 +32,4 @@ public:
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0;
 };
 
-#endif //FIRSTRAYTRACER_HITTABLE_H
+#endif //FIRSTRAYTRACER_HITTABLE_HPP
