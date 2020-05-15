@@ -60,7 +60,7 @@ inline double degress_to_radians(double degrees)
 }
 
 // Common Headers
-#include "ray/ray.hpp"
-#include "vector3/vector3.hpp"
+#include "ray.hpp"
+#include "vector3.hpp"
 
 #endif //FIRSTRAYTRACER_RTWEEKEND_HPP

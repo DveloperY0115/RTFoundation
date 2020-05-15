@@ -5,9 +5,10 @@
 #ifndef FIRSTRAYTRACER_VECTOR3_HPP
 #define FIRSTRAYTRACER_VECTOR3_HPP
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
+#include <algorithm>
 
 class vector3
 {
@@ -113,12 +114,12 @@ public:
         e[0] *= k; e[1] *= k; e[2] *= k;
     }
 
-    static vector3 random()
+    inline static vector3 random()
     {
         return vector3(random_double(), random_double(), random_double());
     }
 
-    static vector3 random(double min, double max)
+    inline static vector3 random(double min, double max)
     {
         return vector3(random_double(min,max), random_double(min, max),
                 random_double(min, max));
@@ -191,6 +192,14 @@ public:
                         (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
     }
 
+    vector3 random_unit_vector()
+    {
+        auto a = random_double(0, 2*pi);
+        auto z = random_double(-1, 1);
+        auto r = sqrt(1-z*z);
+        return vector3(r*cos(a), r*sin(a), z);
+    }
+
     vector3 random_in_unit_sphere()
     {
         while (true)
@@ -199,6 +208,16 @@ public:
             if (p.length_squared() >= 1) continue;
             return p;
         }
+    }
+
+    vector3 random_in_hemisphere(const vector3& normal)
+    {
+        vector3 in_unit_sphere = random_in_unit_sphere();
+        if (dot_product(in_unit_sphere, normal) > 0.0)
+            return in_unit_sphere;
+        else
+            return -in_unit_sphere;
+
     }
 
 

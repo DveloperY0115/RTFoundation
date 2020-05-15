@@ -5,7 +5,7 @@
 #ifndef FIRSTRAYTRACER_HITTABLE_HPP
 #define FIRSTRAYTRACER_HITTABLE_HPP
 
-#include "ray/ray.hpp"
+#include "ray.hpp"
 
 struct hit_record
 {

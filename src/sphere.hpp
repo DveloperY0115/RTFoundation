@@ -5,8 +5,8 @@
 #ifndef FIRSTRAYTRACER_SPHERE_HPP
 #define FIRSTRAYTRACER_SPHERE_HPP
 
-#include "hittable/hittable.hpp"
-#include "vector3/vector3.hpp"
+#include "hittable.hpp"
+#include "vector3.hpp"
 
 class sphere: public hittable
 {

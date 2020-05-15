@@ -7,5 +7,4 @@ project(FirstRayTracer)
 set(CMAKE_CXX_STANDARD 17)
 set( CMAKE_C_COMPILER  "gcc" )
 
-INCLUDE_DIRECTORIES( ./Include )
-add_executable(FirstRayTracer main.cpp)
+add_executable(FirstRayTracer src/main.cpp)
