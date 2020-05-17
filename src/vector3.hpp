@@ -36,6 +36,7 @@ public:
      *  Defining basic arithmetic for a vector
      */
     vector3 operator - () const { return vector3(-e[0], -e[1], -e[2]); }
+
     double operator[](int index) const { return e[index]; }
     // Overriding?
     double& operator[](int index) { return e[index]; };

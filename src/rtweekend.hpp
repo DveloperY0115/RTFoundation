@@ -31,7 +31,7 @@ inline double clamp(double x, double min, double max)
     return x;
 }
 
-inline double modern_random_double()
+inline double random_double()
 {
     // Newly added random number generation engine.
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
@@ -42,11 +42,13 @@ inline double modern_random_double()
     return rand_generator();
 }
 
+/*
 inline double random_double()
 {
     // Returns a random real number in [0, 1).
     return rand() / (RAND_MAX + 1.0);
 }
+*/
 
 inline double random_double(double min, double max)
 {

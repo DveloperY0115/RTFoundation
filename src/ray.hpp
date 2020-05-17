@@ -16,7 +16,7 @@ public:
     {
         // Do nothing
     }
-    ray(const vector3& origin, const vector3& direction)
+    ray(const point3& origin, const vector3& direction)
             : orig(origin), dir(direction)
     {
         // Do nothing
@@ -24,7 +24,7 @@ public:
 
     vector3 origin() const
     {
-        return vector3();
+        return orig;
     }
 
     vector3 direction() const
