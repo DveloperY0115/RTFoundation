@@ -2,10 +2,10 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_CAMERA_H
-#define FIRSTRAYTRACER_CAMERA_H
+#ifndef FIRSTRAYTRACER_CAMERA_HPP
+#define FIRSTRAYTRACER_CAMERA_HPP
 
-#include "rtweekend.h"
+#include "rtweekend.hpp"
 
 class camera
 {
@@ -31,4 +31,4 @@ public:
 
 };
 
-#endif //FIRSTRAYTRACER_CAMERA_H
+#endif //FIRSTRAYTRACER_CAMERA_HPP

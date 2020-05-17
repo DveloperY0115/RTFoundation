@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_RTWEEKEND_H
-#define FIRSTRAYTRACER_RTWEEKEND_H
+#ifndef FIRSTRAYTRACER_RTWEEKEND_HPP
+#define FIRSTRAYTRACER_RTWEEKEND_HPP
 
 #include <cmath>
 #include <cstdlib>
@@ -31,21 +31,24 @@ inline double clamp(double x, double min, double max)
     return x;
 }
 
-inline double modern_random_double()
+inline double random_double()
 {
     // Newly added random number generation engine.
     static std::uniform_real_distribution<double> distribution(0.0, 1.0);
     static std::mt19937 generator;
     static std::function<double()> rand_generator =
             std::bind(distribution, generator);
+
     return rand_generator();
 }
 
+/*
 inline double random_double()
 {
     // Returns a random real number in [0, 1).
     return rand() / (RAND_MAX + 1.0);
 }
+*/
 
 inline double random_double(double min, double max)
 {
@@ -59,8 +62,7 @@ inline double degress_to_radians(double degrees)
 }
 
 // Common Headers
+#include "ray.hpp"
+#include "vector3.hpp"
 
-#include "ray/ray.h"
-#include "vector3/vector3.h"
-
-#endif //FIRSTRAYTRACER_RTWEEKEND_H
+#endif //FIRSTRAYTRACER_RTWEEKEND_HPP

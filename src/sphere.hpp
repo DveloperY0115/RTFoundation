@@ -2,9 +2,28 @@
 // Created by 유승우 on 2020/04/27.
 //
 
-#include "../Include/hittable/hittable.h"
-#include "../Include/geometry/sphere.h"
-#include "../Include/vector3/vector3.h"
+#ifndef FIRSTRAYTRACER_SPHERE_HPP
+#define FIRSTRAYTRACER_SPHERE_HPP
+
+#include "hittable.hpp"
+#include "vector3.hpp"
+
+class sphere: public hittable
+{
+    /*
+     * Note that sphere class inherits only the 'hit' function in this class.
+     * The use of hit_record is allowed because the header is included.
+     */
+public:
+    sphere() {}
+    sphere(point3 cen, double r) : center(cen), radius(r) {};
+
+    virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const;
+
+public:
+    vector3 center;
+    double radius;
+};
 
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
 {
@@ -48,3 +67,5 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
     return false;
 }
+
+#endif //FIRSTRAYTRACER_SPHERE_HPP
