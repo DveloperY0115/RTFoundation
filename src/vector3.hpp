@@ -193,6 +193,11 @@ public:
                         (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
     }
 
+    vector3 reflect(const vector3& v, const vector3& n)
+    {
+        return v - 2 * dot_product(v, n) * n;
+    }
+
     vector3 random_unit_vector()
     {
         auto a = random_double(0, 2*pi);

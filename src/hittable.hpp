@@ -5,12 +5,24 @@
 #ifndef FIRSTRAYTRACER_HITTABLE_HPP
 #define FIRSTRAYTRACER_HITTABLE_HPP
 
+#include "rtweekend.hpp"
 #include "ray.hpp"
 
+class material;
+
+/*
+ * The structure hit_record stores:
+ * i) The coordinate of hit-point
+ * ii) The normal vector of geometry at the hit-point
+ * iii) Material data of that point(or surface)
+ * iv) Solution that gives the parameter to that point from the origin
+ * v) The boolean function that determines the relative direction of ray and normal
+ */
 struct hit_record
 {
     point3 p;
     vector3 normal;
+    shared_ptr<material> mat_ptr;
     double t;
     bool front_face;
 
