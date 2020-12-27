@@ -33,7 +33,7 @@ public:
     double getZ() const { return e[2]; }
 
     /*
-     *  Defining basic arithmetic for a vector
+     *  Define unary operators for a vector
      */
     vector3 operator - () const { return vector3(-e[0], -e[1], -e[2]); }
 
@@ -42,7 +42,8 @@ public:
     double& operator[](int index) { return e[index]; };
 
     /*
-     *  Element-wise addition, subtraction 은 가능한데, 곱셈, 나눗셈? broadcasting 인가?
+     * Define vector addition, subtraction, (element-wise) multiplication and division,
+     * and scalar multiplication and division
      */
     vector3& operator += (const vector3 &v)
     {
@@ -95,31 +96,46 @@ public:
      * vector3 operator + (const vector3 &v1, const vector3 &v2);
      */
 
-    /*
-     *  Returns the Euclidean Norm and its square.
+    /**
+     * Return the Euclidean norm of calling vector
+     * @return Euclidean length of vector
      */
     double length() const
     {
         return sqrt(length_squared());
     }
 
+    /**
+     * Return the squared sum of vector elements (square of length)
+     * @return Square of Euclidean length of vector
+     */
     double length_squared() const
     {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
-    // Creates an unit vector
+    /**
+     * Normalize the calling vector
+     */
     void make_unit_vector()
     {
         double k = 1.0 / sqrt(e[0]*e[0] + e[1]*e[1] * e[2]*e[2]);
         e[0] *= k; e[1] *= k; e[2] *= k;
     }
 
+    /**
+     * Create and return an instance of 'vector3' class
+     * @return an instance of 'vector3' whose elements are set randomly
+     */
     inline static vector3 random()
     {
         return vector3(random_double(), random_double(), random_double());
     }
 
+    /**
+     * Create and return an instance of 'vector3' class
+     * @return an instance of 'vector3' whose elements are set randomly within given bounds
+     */
     inline static vector3 random(double min, double max)
     {
         return vector3(random_double(min,max), random_double(min, max),
@@ -130,6 +146,12 @@ public:
     friend std::ostream& operator<<(std::ostream &output_stream, vector3 &t);
 
 };
+
+    /*
+     * Type aliases for 'vector3'
+     */
+    using point3 = vector3;   // 3D point
+    using color = vector3;   // RGB color
 
     std::istream& operator>>(std::istream &input_stream, vector3 &t)
     {
@@ -143,9 +165,9 @@ public:
         return output_stream;
     }
 
-    using point3 = vector3;   // 3D point
-    using color = vector3;   // RGB color
-
+    /*
+     * Overload binary operators for 'vector3' class
+     */
     vector3 operator + (const vector3 &v1, const vector3 &v2)
     {
         return vector3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
@@ -176,23 +198,40 @@ public:
         return (1/t) * v;
     }
 
+    /**
+     * Return normalized duplicate of 'v'
+     * @param v a 'vector3' instance
+     * @return a duplicate of 'v' but normalized one
+     */
     vector3 unit_vector(vector3 v)
     {
         return v / v.length();
     }
 
+    /**
+     * Calculate the value of inner product of two given vectors
+     * @param v1 a 'vector3' instance
+     * @param v2 a 'vector3' instance
+     * @return the inner product of two vectors
+     */
     double dot_product(const vector3 &v1, const vector3 &v2)
     {
         return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
     }
 
+    /**
+     * Calculate the value of cross product of two given vectors
+     * @param v1 a 'vector3' instance
+     * @param v2 a 'vector3' instance
+     * @return the cross product of two vectors
+     */
     vector3 cross_product(const vector3 &v1, const vector3 &v2)
     {
         return vector3( (v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1]),
                         (-(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0])),
                         (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
     }
-
+    
     vector3 reflect(const vector3& v, const vector3& n)
     {
         return v - 2 * dot_product(v, n) * n;
