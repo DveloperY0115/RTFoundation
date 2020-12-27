@@ -40,7 +40,7 @@ public:
     /*
      * The member function hit, which is expected to be implemented in a derived class
      */
-    virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const;
+    virtual bool hit(const ray &r, double t_min, double t_max, hit_record &rec) const override;
 
 public:
     // dynamic array that stores shard_ptr of <hittable> objects
