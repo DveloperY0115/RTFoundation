@@ -18,10 +18,10 @@ private:
 public:
     camera()
     {
-         lower_left_corner = point3(-2.0, -1.0, -1.0);
-         horizontal = vector3(4.0, 0.0, 0.0);
-         vertical = vector3(0.0, 2.0, 0.0);
-         origin = point3(0.0, 0.0, 0.0);
+         lower_left_corner = point3(-2.0, -1.0, -1.0);      // global coordinate of upper left corner of the viewport
+         horizontal = vector3(4.0, 0.0, 0.0);   // horizontal basis within the viewport plane
+         vertical = vector3(0.0, 2.0, 0.0);     // vertical basis within the viewport plane
+         origin = point3(0.0, 0.0, 0.0);    // global coordinate of camera itself
     }
 
     ray get_ray(double u, double v) const
