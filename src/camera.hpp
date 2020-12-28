@@ -9,12 +9,6 @@
 
 class camera
 {
-private:
-    point3 origin;
-    point3 lower_left_corner;
-    vector3 horizontal;
-    vector3 vertical;
-
 public:
     camera()
     {
@@ -29,6 +23,11 @@ public:
         return ray(origin, (lower_left_corner + u * horizontal + v * vertical) - origin);
     }
 
+private:
+    point3 origin;
+    point3 lower_left_corner;
+    vector3 horizontal;
+    vector3 vertical;
 };
 
 #endif //FIRSTRAYTRACER_CAMERA_HPP

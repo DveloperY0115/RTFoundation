@@ -20,12 +20,6 @@ class material;
  */
 struct hit_record
 {
-    point3 p;
-    vector3 normal;
-    shared_ptr<material> mat_ptr;
-    double t;
-    bool front_face;
-
     inline void set_face_normal(const ray& r, const vector3& outward_normal)
     {
         // 'normal' is against the incident ray
@@ -33,6 +27,11 @@ struct hit_record
         normal = front_face ? outward_normal : -outward_normal;
     }
 
+    point3 p;
+    vector3 normal;
+    shared_ptr<material> mat_ptr;
+    double t;
+    bool front_face;
 };
 
 

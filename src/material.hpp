@@ -34,10 +34,6 @@ public:
     // Constructor
     metal(const color& a, double f) : albedo(a), fuzz(f < 1 ? f: 1) {}
 
-public:
-    color albedo;
-    double fuzz;
-
     virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
             ) const
@@ -51,6 +47,10 @@ public:
         attenuation = albedo;
         return (dot_product(scattered.direction(), rec.normal) > 0);
     }
+
+public:
+    color albedo;
+    double fuzz;
 };
 
 /*
@@ -58,9 +58,6 @@ public:
  */
 class lambertian : public material
 {
-public:
-    color albedo;
-
 public:
     lambertian(const color& a) : albedo(a) {}
 
@@ -75,6 +72,9 @@ public:
         attenuation = albedo;
         return true;
     }
+
+public:
+    color albedo;
 };
 
 #endif //FIRSTRAYTRACER_MATERIAL_HPP

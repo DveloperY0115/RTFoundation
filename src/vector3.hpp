@@ -13,7 +13,6 @@
 class vector3
 {
 public:
-    double e[3]{};
     /*
      *  Empty constructor for 3D vector
      */
@@ -145,6 +144,8 @@ public:
     friend std::istream& operator>>(std::istream &input_stream, vector3 &t);
     friend std::ostream& operator<<(std::ostream &output_stream, vector3 &t);
 
+public:
+    double e[3]{};
 };
 
     /*
