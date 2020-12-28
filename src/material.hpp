@@ -64,7 +64,7 @@ public:
 
     virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
-            ) const
+            ) const override
     {
         auto scatter_direction = rec.normal + random_in_unit_sphere();
 
