@@ -231,7 +231,13 @@ public:
                         (-(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0])),
                         (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
     }
-    
+
+    /**
+     * Calculate the reflection of 'v' which reflects off the surface characterized by normal 'n'
+     * @param v a 'vector3' instance representing an incidence ray
+     * @param n a 'vector3' instance representing a normal vector of the surface on which 'v' is being reflected off
+     * @return the reflection of 'v'
+     */
     vector3 reflect(const vector3& v, const vector3& n)
     {
         return v - 2 * dot_product(v, n) * n;
@@ -245,6 +251,10 @@ public:
         return vector3(r*cos(a), r*sin(a), z);
     }
 
+    /**
+     * Generate an unit vector which points an arbitrary point on the surface of unit sphere
+     * @return a normalized 'vector3' instance that points a random point on a unit sphere
+     */
     vector3 random_in_unit_sphere()
     {
         while (true)
@@ -255,6 +265,17 @@ public:
         }
     }
 
+    /**
+     * Generate an unit vector which points an arbitrary point on the surface of hemisphere specified by normal
+     *
+     * This function is used to generate a random ray scattered on the surface of diffuse material.
+     *
+     * By forcing a ray to be emitted through a hemisphere in the direction of normal vector,
+     * one can be ensured that the object will behave more realistically under direct light source, since all
+     * the rays are now spreads out uniformly to the open space.
+     * @param normal a normal vector that points the center of unit sphere tangent to the surface specified by itself
+     * @return a randomly generated vector which points an arbitrary point on the hemisphere
+     */
     vector3 random_in_hemisphere(const vector3& normal)
     {
         vector3 in_unit_sphere = random_in_unit_sphere();
