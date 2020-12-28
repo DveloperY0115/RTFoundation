@@ -39,14 +39,14 @@ Project Structure
 and under `src` directory there are:
 ```
 .
-├── camera.hpp              # *camera* class of FirstRayTracer
+├── camera.hpp              # camera class of FirstRayTracer
 ├── color.hpp               # a function for writing RGB data to a file
-├── hittable.hpp            # *hittable* class of FirstRayTracer
-├── hittable_list.hpp       # class for managing multiple *hittable* objects in a scene
+├── hittable.hpp            # hittable class of FirstRayTracer
+├── hittable_list.hpp       # class for managing multiple hittable objects in a scene
 ├── main.cpp                # a demo code that generates the cover image
-├── material.hpp            # general form of *material* class and its derivations
-├── ray.hpp                 # *ray* class of FirstRayTracer
+├── material.hpp            # general form of material class and its derivations
+├── ray.hpp                 # ray class of FirstRayTracer
 ├── rtweekend.hpp           # a project header defining constants & utility functions
-├── sphere.hpp              # *sphere* class which is a derived class of *hittable*
-└── vector3.hpp             # *vector3* class which defines the fundamental ADT of this renderer
+├── sphere.hpp              # sphere class which is a derived class of hittable
+└── vector3.hpp             # vector3 class which defines the fundamental ADT of this renderer
 ```
