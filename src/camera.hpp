@@ -11,6 +11,9 @@ class camera
 {
 public:
     camera(
+            point3 lookfrom,
+            point3 lookat,
+            vector3 vup,
             double vfov, // vertical field-of-view in degrees
             double aspect_ratio
             ) {
@@ -19,17 +22,21 @@ public:
             auto viewport_height = 2.0 * h;
             auto viewport_width = aspect_ratio * viewport_height;
 
+            auto w = unit_vector(lookfrom - lookat);
+            auto u = unit_vector(cross_product(vup, w));
+            auto v = cross_product(w, u);
+
             auto focal_length = 1.0;
 
-            origin = point3(0, 0, 0);
-            horizontal = vector3(viewport_width, 0.0, 0.0);
-            vertical = vector3(0.0, viewport_height, 0.0);
-            lower_left_corner = origin - horizontal/2 - vertical/2 - vector3(0, 0, focal_length);
+            origin = lookfrom;
+            horizontal = viewport_width * u;
+            vertical = viewport_height * v;
+            lower_left_corner = origin - horizontal/2 - vertical/2 - w;
     }
 
-    ray get_ray(double u, double v) const
+    ray get_ray(double s, double t) const
     {
-        return ray(origin, (lower_left_corner + u * horizontal + v * vertical) - origin);
+        return ray(origin, lower_left_corner + s * horizontal + t * vertical - origin);
     }
 
 private:
