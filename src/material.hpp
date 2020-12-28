@@ -10,8 +10,12 @@
 #include "hittable.hpp"
 
 /*
- * Generalized form of material data structure
- * Every child classes inherits this must contain a function regarding the scattering
+ * Generalized, abstract class for different materials
+ * The common roles of various material classes are:
+ * 1. If the object didn't fully absorbed incident ray, produce a scattered ray
+ * 2. (If 1), determine how much the scattered ray is attenuated compared to incident ray
+ *
+ * In short, the material of the surface tells the ray tracer how rays interact with the surface.
  */
 class material
 {

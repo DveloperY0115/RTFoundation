@@ -28,6 +28,9 @@ color ray_color(const ray& r, const hittable& world, int depth)
         point3 target = rec.p + random_in_hemisphere(rec.normal);
         return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
     }
+
+    // if the ray didn't hit any object, set the pixel color as background
+    // (in this case, background color is set to be a color gradient of sky blue)
     vector3 unit_direction = unit_vector(r.direction());
     auto t = 0.5*(unit_direction.getY() + 1.0);
     return (1.0-t)*vector3(1.0, 1.0, 1.0) + t*vector3(0.5, 0.7, 1.0);
