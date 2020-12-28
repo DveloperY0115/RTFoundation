@@ -261,7 +261,7 @@ public:
         {
             auto p = vector3::random(-1, 1);
             if (p.length_squared() >= 1) continue;
-            return p;
+            return unit_vector(p);
         }
     }
 
