@@ -74,7 +74,17 @@ public:
         double refraction_ratio = rec.front_face ? (1.0/ir) : ir;
 
         vector3 unit_direction = unit_vector(r_in.direction());
-        vector3 refracted_direction = refract(unit_direction, rec.normal, refraction_ratio);
+        double cos_theta = fmin(dot_product(-unit_direction, rec.normal), 1.0);
+        double sin_theta = sqrt(1.0 - cos_theta * cos_theta);
+
+        bool cannot_refract = refraction_ratio * sin_theta > 1.0;
+        vector3 refracted_direction;
+
+        if (cannot_refract || reflectance(cos_theta, refraction_ratio) > random_double()) {
+            refracted_direction = reflect(unit_direction, rec.normal);
+        } else {
+            refracted_direction = refract(unit_direction, rec.normal, refraction_ratio);
+        }
 
         scattered = ray(rec.p, refracted_direction);
         return true;
@@ -82,6 +92,14 @@ public:
 
 public:
     double ir;  // index of refraction
+
+private:
+    static double reflectance(double cosine, double ref_idx) {
+        // Use Schlick's approximation for reflectance
+        auto r0 = (1 - ref_idx) / (1 + ref_idx);
+        r0 = r0 * r0;
+        return r0 + (1 - r0) * pow((1 - cosine), 5);
+    }
 };
 
 /*

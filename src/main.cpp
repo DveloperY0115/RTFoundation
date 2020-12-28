@@ -53,7 +53,7 @@ int main()
     hittable_list world;
     auto ground = make_shared<sphere>(point3(0, -100.5, -1), 100, make_shared<lambertian>(color(0.7, 1.0, 0.2)));
     auto ball_at_center = make_shared<sphere>(point3(0,0,-1), 0.5, make_shared<dielectric>(1.5));
-    auto ball_at_left = make_shared<sphere>(point3(-1, 0, -1), 0.5, make_shared<dielectric>(1.7));
+    auto ball_at_left = make_shared<sphere>(point3(-1, 0, -1), -0.5, make_shared<dielectric>(1.7));
     auto ball_at_right = make_shared<sphere>(point3(1, 0, -1), 0.5, make_shared<metal>(color(0.8, 0.6, 0.2), 0.3));
 
     world.add(ball_at_center);
