@@ -22,7 +22,7 @@ struct hit_record
 {
     inline void set_face_normal(const ray& r, const vector3& outward_normal)
     {
-        // 'normal' is against the incident ray
+        // front face is set to be true, if the normal of the surface and incident ray are opposite
         front_face = dot_product(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }
