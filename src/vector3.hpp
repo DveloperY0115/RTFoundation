@@ -141,6 +141,15 @@ public:
                 random_double(min, max));
     }
 
+    /**
+     * Checks whether the given vector is close to zero vector
+     * @return true if the vector is close to (within 1e-8) zero in all dimensions
+     */
+    bool near_zero() const {
+        const auto s = 1e-8;
+        return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
     friend std::istream& operator>>(std::istream &input_stream, vector3 &t);
     friend std::ostream& operator<<(std::ostream &output_stream, vector3 &t);
 
