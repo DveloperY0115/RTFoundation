@@ -59,15 +59,19 @@ public:
 class lambertian : public material
 {
 public:
+    // Constructor
     lambertian(const color& a) : albedo(a) {}
 
     virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
             ) const
     {
-        vector3 scatter_direction = rec.normal + random_in_unit_sphere();
+        auto scatter_direction = rec.normal + random_in_unit_sphere();
 
-        // since we passed a reference of variable, the scattered ray is determined here.
+        // catch degenerate scatter direction - this happens when randomly generated vector is almost against normal
+        if (scatter_direction.near_zero())
+            scatter_direction = rec.normal;
+        
         scattered = ray(rec.p, scatter_direction);
         attenuation = albedo;
         return true;
