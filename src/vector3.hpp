@@ -244,13 +244,28 @@ public:
 
     /**
      * Calculate the reflection of 'v' which reflects off the surface characterized by normal 'n'
-     * @param v a 'vector3' instance representing an incidence ray
+     * @param v a 'vector3' instance representing an incident ray
      * @param n a 'vector3' instance representing a normal vector of the surface on which 'v' is being reflected off
      * @return the reflection of 'v'
      */
     vector3 reflect(const vector3& v, const vector3& n)
     {
         return v - 2 * dot_product(v, n) * n;
+    }
+
+    /**
+     * Calculate the refraction of 'v' which refracts at the surface characterized by normal 'n'
+     * @param v a 'vector3' instance representing an incident ray
+     * @param n a 'vector3' instance representing a normal vector of the surface on which 'v' is being refracted
+     * @param etai_over_etat a real valued, ratio of refractive indices of two adjacent matters
+     * @return the refraction of 'v'
+     */
+    vector3 refract(const vector3& v, const vector3& n, double etai_over_etat) {
+        auto cos_theta = fmin(dot_product(-v, n), 1.0);
+        vector3 refracted_perp = etai_over_etat * (v + cos_theta * n);
+        vector3 refracted_parallel = -sqrt(fabs(1.0 - refracted_perp.length_squared())) * n;
+        vector3 refracted = refracted_perp + refracted_parallel;
+        return refracted;
     }
 
     vector3 random_unit_vector()
