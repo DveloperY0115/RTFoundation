@@ -292,13 +292,13 @@ public:
 
     /**
      * Generates an unit vector which points an arbitrary point of the unit disk
-     * @return a 'vector3' instance that points a random point on a unit disk
+     * @return a normalized 'vector3' instance that points a random point on a unit disk
      */
     vector3 random_in_unit_disk() {
         while (true) {
             auto p = vector3(random_double(-1, 1), random_double(-1, 1), 0.0);
             if (p.length_squared() >= 1) continue;
-            return p;
+            return unit_vector(p);
         }
     }
 
