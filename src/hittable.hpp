@@ -28,8 +28,7 @@ struct hit_record
 
     inline void set_face_normal(const ray& r, const vector3& outward_normal)
     {
-        // if the direction of light and the outward directed normal vector is opposite,
-        // this function returns true
+        // 'normal' is against the incident ray
         front_face = dot_product(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }
