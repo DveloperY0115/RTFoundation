@@ -66,12 +66,17 @@ public:
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
             ) const override
     {
+        // randomly set where the scattered ray heads
         auto scatter_direction = rec.normal + random_in_unit_sphere();
 
         // catch degenerate scatter direction - this happens when randomly generated vector is almost against normal
         if (scatter_direction.near_zero())
             scatter_direction = rec.normal;
-        
+
+        /*
+         * create actual 'ray' instance and assign its reference to 'scattered',
+         * also assign albedo value to 'attenuation'
+         */
         scattered = ray(rec.p, scatter_direction);
         attenuation = albedo;
         return true;
