@@ -36,19 +36,20 @@ public:
 
     virtual bool scatter(
             const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
-            ) const
+            ) const override
     {
         vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
 
-        // since we passed a reference of variable, the scattered ray is determined here.
-        // the fuzziness determines the clarity of metal surface. if it's value gets large
-        // the metal gets closer to diffuse material
         scattered = ray(rec.p, reflected + fuzz*random_in_unit_sphere());
         attenuation = albedo;
         return (dot_product(scattered.direction(), rec.normal) > 0);
     }
 
 public:
+    /*
+     * albedo - the factor that determines the portion of incident ray that the material reflects
+     * fuzz (fuzziness) - the factor of not being clear, metal with higher fuzziness tends to act similar to diffuse
+     */
     color albedo;
     double fuzz;
 };
@@ -83,6 +84,9 @@ public:
     }
 
 public:
+    /*
+    * albedo - the factor that determines the portion of incident ray that the material reflects
+    */
     color albedo;
 };
 
