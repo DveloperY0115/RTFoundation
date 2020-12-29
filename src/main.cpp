@@ -6,6 +6,9 @@
 #include "sphere.hpp"
 #include "color.hpp"
 #include "material.hpp"
+#include "lambertian.hpp"
+#include "metal.hpp"
+#include "dielectric.hpp"
 
 color ray_color(const ray& r, const hittable& world, int depth)
 {
@@ -95,17 +98,30 @@ int main()
 
     // set world
 
-    auto world = random_scene();
+    hittable_list world;
+
+    auto ground_material = make_shared<lambertian>(color(0.6, 1.0, 0.4));
+    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
+
+    auto glass_material = make_shared<dielectric>(1.5);
+
+    for (int i = 1; i < 11; i++) {
+        if (i % 2 == 1) {
+            world.add(make_shared<sphere>(point3(0, 2.5, 0), 0.25 * i, glass_material));
+        } else {
+            world.add(make_shared<sphere>(point3(0, 2.5, 0), -0.25 * i, glass_material));
+        }
+    }
 
     // set camera
 
-    point3 lookfrom(13, 2, 3);
-    point3 lookat(0, 0, 0);
+    point3 lookfrom(4, 4, 4);
+    point3 lookat(0, 2.5, 0);
     vector3 vup(0, 1, 0);
-    auto dist_to_focus = 10.0;
+    auto dist_to_focus = 1.0;
     auto aperture = 0.1;
 
-    camera cam = camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    camera cam = camera(lookfrom, lookat, vup, 55, aspect_ratio, aperture, dist_to_focus);
 
     // render
 
