@@ -13,7 +13,6 @@
 class vector3
 {
 public:
-    double e[3]{};
     /*
      *  Empty constructor for 3D vector
      */
@@ -33,7 +32,7 @@ public:
     double getZ() const { return e[2]; }
 
     /*
-     *  Defining basic arithmetic for a vector
+     *  Define unary operators for a vector
      */
     vector3 operator - () const { return vector3(-e[0], -e[1], -e[2]); }
 
@@ -42,7 +41,8 @@ public:
     double& operator[](int index) { return e[index]; };
 
     /*
-     *  Element-wise addition, subtraction 은 가능한데, 곱셈, 나눗셈? broadcasting 인가?
+     * Define vector addition, subtraction, (element-wise) multiplication and division,
+     * and scalar multiplication and division
      */
     vector3& operator += (const vector3 &v)
     {
@@ -95,41 +95,73 @@ public:
      * vector3 operator + (const vector3 &v1, const vector3 &v2);
      */
 
-    /*
-     *  Returns the Euclidean Norm and its square.
+    /**
+     * Return the Euclidean norm of calling vector
+     * @return Euclidean length of vector
      */
     double length() const
     {
         return sqrt(length_squared());
     }
 
+    /**
+     * Return the squared sum of vector elements (square of length)
+     * @return Square of Euclidean length of vector
+     */
     double length_squared() const
     {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
-    // Creates an unit vector
+    /**
+     * Normalize the calling vector
+     */
     void make_unit_vector()
     {
         double k = 1.0 / sqrt(e[0]*e[0] + e[1]*e[1] * e[2]*e[2]);
         e[0] *= k; e[1] *= k; e[2] *= k;
     }
 
+    /**
+     * Create and return an instance of 'vector3' class
+     * @return an instance of 'vector3' whose elements are set randomly
+     */
     inline static vector3 random()
     {
         return vector3(random_double(), random_double(), random_double());
     }
 
+    /**
+     * Create and return an instance of 'vector3' class
+     * @return an instance of 'vector3' whose elements are set randomly within given bounds
+     */
     inline static vector3 random(double min, double max)
     {
         return vector3(random_double(min,max), random_double(min, max),
                 random_double(min, max));
     }
 
+    /**
+     * Checks whether the given vector is close to zero vector
+     * @return true if the vector is close to (within 1e-8) zero in all dimensions
+     */
+    bool near_zero() const {
+        const auto s = 1e-8;
+        return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
     friend std::istream& operator>>(std::istream &input_stream, vector3 &t);
     friend std::ostream& operator<<(std::ostream &output_stream, vector3 &t);
 
+public:
+    double e[3]{};
 };
+
+    /*
+     * Type aliases for 'vector3'
+     */
+    using point3 = vector3;   // 3D point
+    using color = vector3;   // RGB color
 
     std::istream& operator>>(std::istream &input_stream, vector3 &t)
     {
@@ -143,9 +175,9 @@ public:
         return output_stream;
     }
 
-    using point3 = vector3;   // 3D point
-    using color = vector3;   // RGB color
-
+    /*
+     * Overload binary operators for 'vector3' class
+     */
     vector3 operator + (const vector3 &v1, const vector3 &v2)
     {
         return vector3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
@@ -176,16 +208,33 @@ public:
         return (1/t) * v;
     }
 
+    /**
+     * Return normalized duplicate of 'v'
+     * @param v a 'vector3' instance
+     * @return a duplicate of 'v' but normalized one
+     */
     vector3 unit_vector(vector3 v)
     {
         return v / v.length();
     }
 
+    /**
+     * Calculate the value of inner product of two given vectors
+     * @param v1 a 'vector3' instance
+     * @param v2 a 'vector3' instance
+     * @return the inner product of two vectors
+     */
     double dot_product(const vector3 &v1, const vector3 &v2)
     {
         return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
     }
 
+    /**
+     * Calculate the value of cross product of two given vectors
+     * @param v1 a 'vector3' instance
+     * @param v2 a 'vector3' instance
+     * @return the cross product of two vectors
+     */
     vector3 cross_product(const vector3 &v1, const vector3 &v2)
     {
         return vector3( (v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1]),
@@ -193,9 +242,30 @@ public:
                         (v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
     }
 
+    /**
+     * Calculate the reflection of 'v' which reflects off the surface characterized by normal 'n'
+     * @param v a 'vector3' instance representing an incident ray
+     * @param n a 'vector3' instance representing a normal vector of the surface on which 'v' is being reflected off
+     * @return the reflection of 'v'
+     */
     vector3 reflect(const vector3& v, const vector3& n)
     {
         return v - 2 * dot_product(v, n) * n;
+    }
+
+    /**
+     * Calculate the refraction of 'v' which refracts at the surface characterized by normal 'n'
+     * @param v a 'vector3' instance representing an incident ray
+     * @param n a 'vector3' instance representing a normal vector of the surface on which 'v' is being refracted
+     * @param etai_over_etat a real valued, ratio of refractive indices of two adjacent matters
+     * @return the refraction of 'v'
+     */
+    vector3 refract(const vector3& v, const vector3& n, double etai_over_etat) {
+        auto cos_theta = fmin(dot_product(-v, n), 1.0);
+        vector3 refracted_perp = etai_over_etat * (v + cos_theta * n);
+        vector3 refracted_parallel = -sqrt(fabs(1.0 - refracted_perp.length_squared())) * n;
+        vector3 refracted = refracted_perp + refracted_parallel;
+        return refracted;
     }
 
     vector3 random_unit_vector()
@@ -206,16 +276,43 @@ public:
         return vector3(r*cos(a), r*sin(a), z);
     }
 
+    /**
+     * Generate an unit vector which points an arbitrary point on the surface of unit sphere
+     * @return a normalized 'vector3' instance that points a random point on a unit sphere
+     */
     vector3 random_in_unit_sphere()
     {
         while (true)
         {
             auto p = vector3::random(-1, 1);
             if (p.length_squared() >= 1) continue;
-            return p;
+            return unit_vector(p);
         }
     }
 
+    /**
+     * Generates an unit vector which points an arbitrary point of the unit disk
+     * @return a normalized 'vector3' instance that points a random point on a unit disk
+     */
+    vector3 random_in_unit_disk() {
+        while (true) {
+            auto p = vector3(random_double(-1, 1), random_double(-1, 1), 0.0);
+            if (p.length_squared() >= 1) continue;
+            return unit_vector(p);
+        }
+    }
+
+    /**
+     * Generate an unit vector which points an arbitrary point on the surface of hemisphere specified by normal
+     *
+     * This function is used to generate a random ray scattered on the surface of diffuse material.
+     *
+     * By forcing a ray to be emitted through a hemisphere in the direction of normal vector,
+     * one can be ensured that the object will behave more realistically under direct light source, since all
+     * the rays are now spreads out uniformly to the open space.
+     * @param normal a normal vector that points the center of unit sphere tangent to the surface specified by itself
+     * @return a randomly generated vector which points an arbitrary point on the hemisphere
+     */
     vector3 random_in_hemisphere(const vector3& normal)
     {
         vector3 in_unit_sphere = random_in_unit_sphere();

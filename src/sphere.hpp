@@ -8,12 +8,11 @@
 #include "hittable.hpp"
 #include "vector3.hpp"
 
+/**
+ * Sphere class which defines a sphere object that can interact with rays in the scene
+ */
 class sphere: public hittable
 {
-    /*
-     * Note that sphere class inherits only the 'hit' function in this class.
-     * The use of hit_record is allowed because the header is included.
-     */
 public:
     sphere() {}
     sphere(point3 cen, double r, shared_ptr<material> m)
@@ -21,12 +20,21 @@ public:
 
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const;
 
+    // member variables of 'sphere'
 public:
     vector3 center;
     double radius;
     shared_ptr<material> mat_ptr;
 };
 
+/**
+ * Determines whether given ray meets the surface of the caller
+ * @param r a ray which will be tested
+ * @param t_min the lower bound for ray offset 't'
+ * @param t_max the upper bound for ray offset 't'
+ * @param rec a structure to store information of the intersection (if it's turned out to be meaningful)
+ * @return true if ray intersects with the surface, false otherwise
+ */
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
 {
     vector3 oc = r.origin() - center;
@@ -36,11 +44,13 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
 
     auto discriminant = half_b * half_b - a*c;
 
-    // sphere is hit by the ray
+    // sphere is hit by the ray if and only if the equation has real solutions
     if (discriminant > 0)
     {
         // Solve for the solution that contains the actual parameter to get the point.
         auto root = sqrt(discriminant);
+
+        // try smaller 't' first
         auto temp = (-half_b - root) / a;
         if (temp < t_max && temp > t_min)
         {
@@ -56,6 +66,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             return true;
         }
 
+        // try larger 't' then
         temp = (-half_b + root) / a;
 
         if (temp < t_max && temp > t_min)
