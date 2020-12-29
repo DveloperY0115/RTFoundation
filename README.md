@@ -1,4 +1,4 @@
-FirstRayTracer
+ray-tracing-in-one-weekend-cpp
 =============
 
 ![cover_image](./media/img-1.21-book1-final.jpg)
@@ -43,10 +43,13 @@ and under `src` directory there are:
 .
 ├── camera.hpp              # camera class of FirstRayTracer
 ├── color.hpp               # a function for writing RGB data to a file
+├── dielectric.hpp          # Dielectric material class
 ├── hittable.hpp            # hittable class of FirstRayTracer
 ├── hittable_list.hpp       # class for managing multiple hittable objects in a scene
+├── lambertian.hpp          # Lambertian (diffuse) material class
 ├── main.cpp                # a demo code that generates the cover image
-├── material.hpp            # general form of material class and its derivations
+├── material.hpp            # general form of material class
+├── metal.hpp               # Metal material class
 ├── ray.hpp                 # ray class of FirstRayTracer
 ├── rtweekend.hpp           # a project header defining constants & utility functions
 ├── sphere.hpp              # sphere class which is a derived class of hittable
