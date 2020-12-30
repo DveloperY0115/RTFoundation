@@ -6,6 +6,7 @@
 #include "sphere.hpp"
 #include "color.hpp"
 #include "material.hpp"
+#include "command_line_tool.hpp"
 
 color ray_color(const ray& r, const hittable& world, int depth)
 {
@@ -86,8 +87,16 @@ void render(const int image_width, const int image_height, const int samples_per
             camera cam, hittable_list world) {
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
-    for (int j = image_height-1; j >= 0; --j) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+    unsigned int processed_lines = 0;
+    unsigned int checkpoint = static_cast<int>(image_height / 50);
+    unsigned int cl_width = 55;
+    time_t interval = 0;
+    loading_bar bar = loading_bar(checkpoint, cl_width, image_height);
+
+    for (int j = image_height - 1; j >= 0; --j) {
+
+        time_t t0 = time(NULL);
+
         for (int i = 0; i < image_width; ++i) {
             color pixel_color(0, 0,0 );
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -98,6 +107,12 @@ void render(const int image_width, const int image_height, const int samples_per
             }
             write_color(std::cout, pixel_color, samples_per_pixel);
         }
+
+        processed_lines++;
+        time_t t1 = time(NULL);
+        time_t took_time = t1 - t0;
+
+        bar.draw(took_time, processed_lines);
     }
 
     std::cerr << "\nDone.\n";
@@ -108,7 +123,7 @@ int main()
     // configure output image
 
     const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 1200;
+    const int image_width = 240;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 500;
     const int max_depth = 50;

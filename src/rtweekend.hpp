@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 #include <random>
+#include <time.h>
 
 // using statements to make codes more simple
 
