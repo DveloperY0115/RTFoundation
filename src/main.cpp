@@ -82,6 +82,26 @@ hittable_list random_scene() {
     return world;
 }
 
+void render(const int image_width, const int image_height, const int samples_per_pixel, const int max_depth,
+            camera cam, hittable_list world) {
+    std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+
+    for (int j = image_height-1; j >= 0; --j) {
+        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        for (int i = 0; i < image_width; ++i) {
+            color pixel_color(0, 0,0 );
+            for (int s = 0; s < samples_per_pixel; ++s) {
+                auto u = (i + random_double()) / (image_width - 1);
+                auto v = (j + random_double()) / (image_height - 1);
+                ray r = cam.get_ray(u, v);
+                pixel_color += ray_color(r, world, max_depth);
+            }
+            write_color(std::cout, pixel_color, samples_per_pixel);
+        }
+    }
+
+    std::cerr << "\nDone.\n";
+}
 
 int main()
 {
@@ -95,38 +115,28 @@ int main()
 
     // set world
 
-    auto world = random_scene();
+    hittable_list world;
+
+    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+
+    auto glass_material = make_shared<dielectric>(1.5);
+
+    world.add(make_shared<sphere>(point3(0, 0, 0), 0.5, glass_material));
+    world.add(make_shared<sphere>(point3(0, 0, 0), -0.75, glass_material));
+    world.add(make_shared<sphere>(point3(0, 0, 0), 1.0, glass_material));
+    world.add(make_shared<sphere>(point3(0, 0, 0), -1.25, glass_material));
+    world.add(make_shared<sphere>(point3(0, 0, 0), 1.5, glass_material));
 
     // set camera
 
-    point3 lookfrom(13, 2, 3);
+    point3 lookfrom(2, 3, 4);
     point3 lookat(0, 0, 0);
     vector3 vup(0, 1, 0);
-    auto dist_to_focus = 10.0;
+    auto dist_to_focus = 2.0;
     auto aperture = 0.1;
 
-    camera cam = camera(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
+    camera cam = camera(lookfrom, lookat, vup, 40, aspect_ratio, aperture, dist_to_focus);
 
-    // render
-
-    std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
-
-    for (int j = image_height-1; j >= 0; --j)
-    {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-        for (int i = 0; i < image_width; ++i)
-        {
-            color pixel_color(0, 0,0 );
-            for (int s = 0; s < samples_per_pixel; ++s)
-            {
-                auto u = (i + random_double()) / (image_width - 1);
-                auto v = (j + random_double()) / (image_height - 1);
-                ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, max_depth);
-            }
-            write_color(std::cout, pixel_color, samples_per_pixel);
-        }
-    }
-
-    std::cerr << "\nDone.\n";
+    render(image_width, image_height, samples_per_pixel, max_depth, cam, world);
 }
