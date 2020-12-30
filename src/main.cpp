@@ -7,6 +7,9 @@
 #include "color.hpp"
 #include "material.hpp"
 #include "command_line_tool.hpp"
+#include "lambertian.hpp"
+#include "metal.hpp"
+#include "dielectric.hpp"
 
 color ray_color(const ray& r, const hittable& world, int depth)
 {
