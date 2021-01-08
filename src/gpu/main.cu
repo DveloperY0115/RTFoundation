@@ -5,6 +5,8 @@
 #include <iostream>
 #include "vector3.hpp"
 #include "ray.hpp"
+#include "sphere.hpp"
+#include "hittable_list.hpp"
 
 #define colorDim 3
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
@@ -28,9 +30,25 @@ __device__ bool hit_sphere(const point3& center, float radius, const ray& r) {
     return (discriminant > 0);
 }
 
-__device__ vector3 ray_color(const ray& r) {
-    if (hit_sphere(point3(0, 0, -1), 0.5, r))
-        return color(1, 0, 0);
+__global__ void create_world(hittable **d_list, hittable **d_world) {
+    if (threadIdx.x == 0 && blockIdx.x == 0) {
+        *(d_list)   = new sphere(vector3(0,0,-1), 0.5);
+        *(d_list+1) = new sphere(vector3(0,-100.5,-1), 100);
+        *d_world    = new hittable_list(d_list,2);
+    }
+}
+
+__global__ void free_world(hittable** d_list, hittable** d_world) {
+    delete *(d_list);
+    delete *(d_list+1);
+    delete *d_world;
+}
+
+__device__ vector3 ray_color(const ray& r, hittable **world) {
+    hit_record rec;
+    if ((*world)->hit(r, 0.0, FLT_MAX, rec)) {
+        return 0.5f * vector3(rec.normal.x() + 1.0f, rec.normal.y() + 1.0f, rec.normal.z() + 1.0f);
+    }
 
     vector3 unit_direction = unit_vector(r.direction());
     float t = 0.5f * (unit_direction.y() + 1.0f);
@@ -38,7 +56,7 @@ __device__ vector3 ray_color(const ray& r) {
 }
 
 __global__ void render(float* fb, int max_x, int max_y, vector3 lower_left_corner, vector3 horizontal,
-                       vector3 vertical, vector3 origin) {
+                       vector3 vertical, vector3 origin, hittable **world) {
     // get global pixel coordinate
     unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -49,9 +67,9 @@ __global__ void render(float* fb, int max_x, int max_y, vector3 lower_left_corne
     float v = float(y) / float(max_y);
 
     ray r = ray(origin, lower_left_corner + u * horizontal + v * vertical);
-    fb[pixel_index] = ray_color(r)[0];
-    fb[pixel_index + 1] = ray_color(r)[1];
-    fb[pixel_index + 2] = ray_color(r)[2];
+    fb[pixel_index] = ray_color(r, world)[0];
+    fb[pixel_index + 1] = ray_color(r, world)[1];
+    fb[pixel_index + 2] = ray_color(r, world)[2];
 }
 
 int main() {
@@ -72,6 +90,16 @@ int main() {
     auto vertical = vector3(0, viewport_height, 0);
     auto lower_left_corner = origin - horizontal/2 - vertical/2 - vector3(0, 0, focal_length);
 
+    // world
+
+    hittable **d_list;
+        checkCudaErrors(cudaMalloc((void**) &d_list, 2 * sizeof(hittable*)));
+    hittable **d_world;
+    checkCudaErrors(cudaMalloc((void **) &d_world, sizeof(hittable*)));
+    create_world<<<1, 1>>>(d_list, d_world);
+    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaDeviceSynchronize());
+
     int num_pixels = image_width * image_height;
     size_t fb_size = 3 * num_pixels * sizeof(float);
 
@@ -85,7 +113,7 @@ int main() {
 
     dim3 blocks(image_width / tx + 1, image_height / ty + 1);
     dim3 threads(tx, ty);
-    render<<<blocks, threads>>>(fb, image_width, image_height, lower_left_corner, horizontal, vertical, origin);
+    render<<<blocks, threads>>>(fb, image_width, image_height, lower_left_corner, horizontal, vertical, origin, d_world);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
@@ -103,6 +131,10 @@ int main() {
         }
     }
 
+    free_world<<<1, 1>>>(d_list, d_world);
+    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaFree(d_list));
+    checkCudaErrors(cudaFree(d_world));
     checkCudaErrors(cudaFree(fb));
     return 0;
 }

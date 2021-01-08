@@ -32,7 +32,7 @@ public:
         return dir;
     }
 
-    __device__ vector3 at(double t) const
+    __device__ vector3 at(float t) const
     {
         return orig + t * dir;
     }
