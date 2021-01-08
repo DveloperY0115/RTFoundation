@@ -19,20 +19,32 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
     }
 }
 
+__device__ bool hit_sphere(const point3& center, float radius, const ray& r) {
+    vector3 oc = r.origin() - center;
+    auto a = dot(r.direction(), r.direction());
+    auto b = 2.0 * dot(oc, r.direction());
+    auto c = dot(oc, oc) - radius*radius;
+    auto discriminant = b*b - 4*a*c;
+    return (discriminant > 0);
+}
+
 __device__ vector3 ray_color(const ray& r) {
+    if (hit_sphere(point3(0, 0, -1), 0.5, r))
+        return color(1, 0, 0);
+
     vector3 unit_direction = unit_vector(r.direction());
     float t = 0.5f * (unit_direction.y() + 1.0f);
-    return (1.0f - t) * vector3(1.0, 1.0, 1.0) + t * vector3(0.5, 0.7, 1.0);
+    return (1.0f - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
 
 __global__ void render(float* fb, int max_x, int max_y, vector3 lower_left_corner, vector3 horizontal,
                        vector3 vertical, vector3 origin) {
     // get global pixel coordinate
-    int x = threadIdx.x + blockIdx.x * blockDim.x;
-    int y = threadIdx.y + blockIdx.y * blockDim.y;
+    unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
+    unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
 
     if ((x >= max_x) || (y >= max_y)) return;   // don't render outside the image
-    int pixel_index = y * max_x * colorDim + x * colorDim;
+    unsigned int pixel_index = y * max_x * colorDim + x * colorDim;
     float u = float(x) / float(max_x);
     float v = float(y) / float(max_y);
 
