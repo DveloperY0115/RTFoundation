@@ -16,30 +16,30 @@ public:
     {
         // Do nothing
     }
-    __device__ ray(const vec3& origin, const vec3& direction)
+    __device__ ray(const vector3& origin, const vector3& direction)
             : orig(origin), dir(direction)
     {
         // Do nothing
     }
 
-    __device__ vec3 origin() const
+    __device__ vector3 origin() const
     {
         return orig;
     }
 
-    __device__ vec3 direction() const
+    __device__ vector3 direction() const
     {
         return dir;
     }
 
-    __device__ vec3 at(double t) const
+    __device__ vector3 at(double t) const
     {
         return orig + t * dir;
     }
 
 public:
-    vec3 orig;
-    vec3 dir;
+    vector3 orig;
+    vector3 dir;
 };
 
 #endif //FIRSTRAYTRACER_RAY_HPP

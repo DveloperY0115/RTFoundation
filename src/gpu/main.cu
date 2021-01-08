@@ -19,14 +19,14 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
     }
 }
 
-__device__ vec3 ray_color(const ray& r) {
-    vec3 unit_direction = unit_vector(r.direction());
+__device__ vector3 ray_color(const ray& r) {
+    vector3 unit_direction = unit_vector(r.direction());
     float t = 0.5f * (unit_direction.y() + 1.0f);
-    return (1.0f - t) * vec3(1.0, 1.0, 1.0) + t * vec3(0.5, 0.7, 1.0);
+    return (1.0f - t) * vector3(1.0, 1.0, 1.0) + t * vector3(0.5, 0.7, 1.0);
 }
 
-__global__ void render(float* fb, int max_x, int max_y, vec3 lower_left_corner, vec3 horizontal,
-                       vec3 vertical, vec3 origin) {
+__global__ void render(float* fb, int max_x, int max_y, vector3 lower_left_corner, vector3 horizontal,
+                       vector3 vertical, vector3 origin) {
     // get global pixel coordinate
     int x = threadIdx.x + blockIdx.x * blockDim.x;
     int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -56,9 +56,9 @@ int main() {
     float focal_length = 1.0;
 
     auto origin = point3(0, 0, 0);
-    auto horizontal = vec3(viewport_width, 0, 0);
-    auto vertical = vec3(0, viewport_height, 0);
-    auto lower_left_corner = origin - horizontal/2 - vertical/2 - vec3(0, 0, focal_length);
+    auto horizontal = vector3(viewport_width, 0, 0);
+    auto vertical = vector3(0, viewport_height, 0);
+    auto lower_left_corner = origin - horizontal/2 - vertical/2 - vector3(0, 0, focal_length);
 
     int num_pixels = image_width * image_height;
     size_t fb_size = 3 * num_pixels * sizeof(float);
