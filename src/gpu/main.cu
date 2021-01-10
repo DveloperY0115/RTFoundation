@@ -4,13 +4,13 @@
 
 #include <iostream>
 #include <curand_kernel.h>
+#include <time.h>
 #include "vector3.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
 
-#define colorDim 3
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
 #define RANDVEC3 vector3(curand_uniform(local_rand_state),curand_uniform(local_rand_state),curand_uniform(local_rand_state))
 
@@ -118,7 +118,7 @@ int main() {
 
     // Image
     const float aspect_ratio = 16.0 / 9.0;
-    const int image_width = 1600;
+    const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     static const int num_samples = 50;
 
@@ -149,13 +149,22 @@ int main() {
     dim3 blocks(image_width / tx + 1, image_height / ty + 1);
     dim3 threads(tx, ty);
 
+    std::cerr << "Rendering a " << image_width << "x" << image_height << " image with " << num_samples << " samples per pixel ";
+    std::cerr << "in " << tx << "x" << ty << " blocks.\n";
+
+    clock_t start, stop;
+    start = clock();
     // render
     render_init<<<blocks, threads>>>(image_width, image_height, d_rand_state);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
-    render<<<blocks, threads>>>(fb, image_width, image_height, 50, d_camera, d_world, d_rand_state);
+    render<<<blocks, threads>>>(fb, image_width, image_height, num_samples, d_camera, d_world, d_rand_state);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
+    stop = clock();
+    double timer_seconds = ((double)(stop - start)) / CLOCKS_PER_SEC;
+
+    std::cerr << "took " << timer_seconds << " seconds.\n";
 
     // write output to a file
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
