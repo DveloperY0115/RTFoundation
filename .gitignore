@@ -6,3 +6,6 @@ cmake-build-debug
 # VS related directories
 .vs
 out
+
+# CUDA profile results
+*.nsight-cuprof-report
