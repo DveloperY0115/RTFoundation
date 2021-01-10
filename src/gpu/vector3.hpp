@@ -1,8 +1,8 @@
 #ifndef VECTOR3_CUDAH
 #define VECTOR3_CUDAH
 
-#include <math.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdlib>
 #include <iostream>
 
 class vector3  {
