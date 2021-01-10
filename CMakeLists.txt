@@ -24,12 +24,12 @@ add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/g
         src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp)
 
 # intermediate
-# add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/rtweekend.hpp src/cpu-to-gpu/vector3.hpp)
+add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp)
 
-# set_target_properties(
-#        rt-convert
-#        PROPERTIES
-#        CUDA_SEPARABLE_COMPILATION ON)
+set_target_properties(
+        rt-convert
+        PROPERTIES
+        CUDA_SEPARABLE_COMPILATION ON)
 
 set_target_properties(
         rt-cuda
