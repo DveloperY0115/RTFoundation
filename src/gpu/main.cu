@@ -3,24 +3,17 @@
 //
 
 #include <iostream>
-#include <curand_kernel.h>
 #include <time.h>
+#include <float.h>
+#include <curand_kernel.h>
 #include "vector3.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
+#include "material.hpp"
 
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
-#define RANDVEC3 vector3(curand_uniform(local_rand_state),curand_uniform(local_rand_state),curand_uniform(local_rand_state))
-
-__device__ vector3 random_in_unit_sphere(curandState *local_rand_state) {
-    vector3 p;
-    do {
-        p = 2.0f * RANDVEC3 - vector3(1, 1, 1);
-    } while (p.squared_length() >= 1.0f);
-    return p;
-}
 
 void check_cuda(cudaError_t result, char const* const func, const char* const file, int const line) {
     if (result) {
@@ -32,20 +25,17 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
     }
 }
 
-__device__ bool hit_sphere(const point3& center, float radius, const ray& r) {
-    vector3 oc = r.origin() - center;
-    auto a = dot(r.direction(), r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius*radius;
-    auto discriminant = b*b - 4*a*c;
-    return (discriminant > 0);
-}
-
 __global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
-        *(d_list)   = new sphere(vector3(0,0,-1), 0.5);
-        *(d_list+1) = new sphere(vector3(0,-100.5,-1), 100);
-        *d_world    = new hittable_list(d_list,2);
+        d_list[0] = new sphere(vector3(0, 0, -1), 0.5,
+                                 new lambertian(color(0.8, 0.3, 0.3)));
+        d_list[1] = new sphere(vector3(0, -100.5, -1), 100,
+                                  new lambertian(color(0.8, 0.8, 0.0)));
+        d_list[2] = new sphere(vector3(1, 0, -1), 0.5,
+                               new metal(color(0.8, 0.6, 0.2), 1.0));
+        d_list[3] = new sphere(vector3(-1, 0, -1), 0.5,
+                               new metal(color(0.8, 0.8, 0.8), 0.3));
+        *d_world    = new hittable_list(d_list,4);
         *d_camera = new camera();
     }
 }
@@ -59,14 +49,19 @@ __global__ void free_world(hittable** d_list, hittable** d_world, camera **d_cam
 
 __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_rand_state) {
     ray cur_ray = r;
-    float cur_attenuation = 1.0f;
+    vector3 cur_attenuation = vector3(1.0, 1.0, 1.0);
 
     for (int i = 0; i < 50; i++) {
         hit_record rec;
         if ((*world)->hit(cur_ray, 0.001f, FLT_MAX, rec)) {
-            vector3 target = rec.p + rec.normal + random_in_unit_sphere(local_rand_state);
-            cur_attenuation *= 0.5f;
-            cur_ray = ray(rec.p, target - rec.p);
+            ray scattered;
+            vector3 attenuation;
+            if (rec.mat_ptr->scatter(cur_ray, rec, attenuation, scattered, local_rand_state)) {
+                cur_attenuation *= attenuation;
+                cur_ray = scattered;
+            } else {
+                return vector3(0.0, 0.0, 0.0);
+            }
         } else {
             vector3 unit_direction = unit_vector(cur_ray.direction());
             float t = 0.5f * (unit_direction.y() + 1.0f);
@@ -74,7 +69,7 @@ __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_
             return cur_attenuation * color;
         }
     }
-    return vector3(0.0, 0.0, 0.0);
+    return vector3(0.0, 0.0, 0.0);  // exceeded recursion
 }
 
 __global__ void render_init(int max_x, int max_y, curandState* rand_state) {
@@ -107,6 +102,7 @@ __global__ void render(vector3* fb, int max_x, int max_y, int num_samples, camer
 
     rand_state[pixel_index] = local_rand_state;
     pixel_color /= float(num_samples);
+    // gamma correction
     pixel_color[0] = sqrt(pixel_color[0]);
     pixel_color[1] = sqrt(pixel_color[1]);
     pixel_color[2] = sqrt(pixel_color[2]);
@@ -118,7 +114,7 @@ int main() {
 
     // Image
     const float aspect_ratio = 16.0 / 9.0;
-    const int image_width = 400;
+    const int image_width = 1600;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     static const int num_samples = 50;
 
@@ -136,7 +132,7 @@ int main() {
     camera **d_camera;
     checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(camera *)));
     hittable **d_list;
-    checkCudaErrors(cudaMalloc((void**) &d_list, 2 * sizeof(hittable*)));
+    checkCudaErrors(cudaMalloc((void**) &d_list, 4 * sizeof(hittable*)));
     hittable **d_world;
     checkCudaErrors(cudaMalloc((void **) &d_world, sizeof(hittable*)));
     create_world<<<1, 1>>>(d_list, d_world, d_camera);

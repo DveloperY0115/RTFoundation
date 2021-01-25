@@ -21,10 +21,10 @@ add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
 
 # renderer using gpu acceleration
 add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp)
+        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp)
 
 # intermediate
-add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp)
+add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp src/cpu-to-gpu/ray.hpp src/gpu/camera.hpp)
 
 set_target_properties(
         rt-convert

@@ -7,10 +7,13 @@
 
 #include "ray.hpp"
 
+class material;
+
 struct hit_record {
     float t;
     vector3 p;
     vector3 normal;
+    material* mat_ptr;
 };
 
 class hittable  {
