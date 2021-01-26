@@ -10,7 +10,7 @@ if (MSVC)
 
     # renderer using gpu acceleration
     add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-            src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp)
+            src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp)
 
     # intermediate
     add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp)
@@ -24,35 +24,20 @@ if (MSVC)
             rt-cuda
             PROPERTIES
             CUDA_SEPARABLE_COMPILATION ON)
-endif()
+endif(MSVC)
 
-# otherwise, build only cpu
-project(ray-tracing-in-cpp CXX)
+if (APPLE)
+    # otherwise, build only cpu
+    project(ray-tracing-in-cpp)
 
-if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 11)
-    set(CMAKE_CXX_STANDARD_REQUIRED True)
-endif()
+    if (NOT DEFINED CMAKE_CXX_STANDARD)
+        set(CMAKE_CXX_STANDARD 11)
+        set(CMAKE_CXX_STANDARD_REQUIRED True)
+    endif()
 
-# renderer using cpu only
-add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
-        src/cpu/hittable.hpp src/cpu/hittable_list.hpp src/cpu/material.hpp src/cpu/lambertian.hpp
-        src/cpu/metal.hpp src/cpu/dielectric.hpp src/cpu/ray.hpp src/cpu/rtweekend.hpp
-        src/cpu/sphere.hpp src/cpu/vector3.hpp)
-
-# renderer using gpu acceleration
-add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp)
-
-# intermediate
-add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp src/cpu-to-gpu/ray.hpp src/gpu/camera.hpp)
-
-set_target_properties(
-        rt-convert
-        PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON)
-
-set_target_properties(
-        rt-cuda
-        PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON)
+    # renderer using cpu only
+    add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
+            src/cpu/hittable.hpp src/cpu/hittable_list.hpp src/cpu/material.hpp src/cpu/lambertian.hpp
+            src/cpu/metal.hpp src/cpu/dielectric.hpp src/cpu/ray.hpp src/cpu/rtweekend.hpp
+            src/cpu/sphere.hpp src/cpu/vector3.hpp)
+endif(APPLE)
