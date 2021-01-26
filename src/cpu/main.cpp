@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <time.h>
 #include "camera.hpp"
 #include "rtweekend.hpp"
 #include "hittable_list.hpp"
@@ -90,8 +90,8 @@ int main()
 {
     // configure output image
 
-    const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 1200;
+    const auto aspect_ratio = 16.0 / 9.0;
+    const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 500;
     const int max_depth = 50;
@@ -101,10 +101,10 @@ int main()
     hittable_list world;
 
     auto ground_material = make_shared<lambertian>(color(0.6, 1.0, 0.4));
-    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
+    auto diffuse_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    world.add(make_shared<sphere>(point3(0, -100, -1), 100, diffuse_material));
 
-    auto glass_material = make_shared<dielectric>(1.5);
-
+    /*
     for (int i = 1; i < 11; i++) {
         if (i % 2 == 1) {
             world.add(make_shared<sphere>(point3(0, 2.5, 0), 0.25 * i, glass_material));
@@ -112,11 +112,14 @@ int main()
             world.add(make_shared<sphere>(point3(0, 2.5, 0), -0.25 * i, glass_material));
         }
     }
+    */
+
+    world.add(make_shared<sphere>(point3(0, 1, -1), 1, diffuse_material));
 
     // set camera
 
-    point3 lookfrom(4, 4, 4);
-    point3 lookat(0, 2.5, 0);
+    point3 lookfrom(0, 0, 0);
+    point3 lookat(0, 0, -1);
     vector3 vup(0, 1, 0);
     auto dist_to_focus = 1.0;
     auto aperture = 0.1;
@@ -124,7 +127,9 @@ int main()
     camera cam = camera(lookfrom, lookat, vup, 55, aspect_ratio, aperture, dist_to_focus);
 
     // render
-
+    clock_t start, end;
+    std::cerr << "Rendering a " << image_width << "x" << image_height << " image with " << 50 << " samples per pixel\n";
+    start = clock();
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
     for (int j = image_height-1; j >= 0; --j)
@@ -143,6 +148,9 @@ int main()
             write_color(std::cout, pixel_color, samples_per_pixel);
         }
     }
+    end = clock();
+    double timer_seconds = ((double)(end - start)) / CLOCKS_PER_SEC;
 
+    std::cerr << "\ntook " << timer_seconds << " seconds.\n";
     std::cerr << "\nDone.\n";
 }

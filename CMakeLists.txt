@@ -1,16 +1,37 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-# Enable both C++, CUDA build toolchains
-project(ray-tracing-in-cpp CXX CUDA)
+# if Windows, enable both C++, CUDA build toolchains
+if (MSVC)
+    project(ray-tracing-in-cpp CXX CUDA)
+    if (NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 14)
+        set(CMAKE_CUDA_STANDARD_REQUIRED  True)
+    endif()
+
+    # renderer using gpu acceleration
+    add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
+            src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp)
+
+    # intermediate
+    add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp)
+
+    set_target_properties(
+            rt-convert
+            PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON)
+
+    set_target_properties(
+            rt-cuda
+            PROPERTIES
+            CUDA_SEPARABLE_COMPILATION ON)
+endif()
+
+# otherwise, build only cpu
+project(ray-tracing-in-cpp CXX)
 
 if (NOT DEFINED CMAKE_CXX_STANDARD)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
-endif()
-
-if (NOT DEFINED CMAKE_CUDA_STANDARD)
-    set(CMAKE_CUDA_STANDARD 14)
-    set(CMAKE_CUDA_STANDARD_REQUIRED  True)
 endif()
 
 # renderer using cpu only
