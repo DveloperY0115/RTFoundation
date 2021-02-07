@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
+#include <curand_kernel.h>
 
 class vector3  {
 
@@ -154,6 +155,14 @@ __device__ vector3 random_in_unit_sphere(curandState *local_rand_state) {
         p = 2.0f * RANDVEC3 - vector3(1, 1, 1);
     } while (p.squared_length() >= 1.0f);
     return p;
+}
+
+__device__ vector3 random_in_unit_disk(curandState *local_rand_state) {
+    while (true) {
+        auto p = vector3(random_double(local_rand_state), random_double(local_rand_state), 0.0);
+        if (p.squared_length() >= 1) continue;
+        return unit_vector(p);
+    }
 }
 
 __device__ vector3 reflect(const vector3& v, const vector3& n) {

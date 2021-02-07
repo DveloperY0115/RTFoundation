@@ -26,7 +26,7 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
     }
 }
 
-__global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera) {
+__global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera, int nx, int ny) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
         d_list[0] = new sphere(vector3(0,0,-1), 0.5,
                                new lambertian(color(0.1, 0.2, 0.5)));
@@ -39,7 +39,22 @@ __global__ void create_world(hittable **d_list, hittable **d_world, camera **d_c
         d_list[4] = new sphere(vector3(-1,0,-1), -0.45,
                                new dielectric(1.5));
         *d_world  = new hittable_list(d_list,5);
-        *d_camera = new camera();
+
+        // initialize camera
+        vector3 lookfrom(3, 3, 2);
+        vector3 lookat(0, 0, -1);
+
+        float dist_to_focus = (lookfrom - lookat).length();
+        float aperture = 2.0f;
+        *d_camera = new camera(
+                lookfrom,
+                lookat,
+                vector3(0, 1, 0),
+                20.0,
+                float(nx)/float(ny),
+                aperture,
+                dist_to_focus
+                );
     }
 }
 
@@ -113,10 +128,9 @@ __global__ void render(vector3* fb, int max_x, int max_y, int num_samples,
     for (int sample_idx = 0; sample_idx < num_samples; sample_idx++) {
         float u = float(x + curand_uniform(&local_rand_state)) / float(max_x);
         float v = float(y + curand_uniform(&local_rand_state)) / float(max_y);
-        ray r = (*cam)->get_ray(u, v);
+        ray r = (*cam)->get_ray(u, v, &local_rand_state);
         pixel_color += ray_color(r, world, &local_rand_state);
     }
-
     rand_state[pixel_index] = local_rand_state;
     pixel_color /= float(num_samples);
     // gamma correction
@@ -152,7 +166,7 @@ int main() {
     checkCudaErrors(cudaMalloc((void**) &d_list, 5 * sizeof(hittable*)));
     hittable **d_world;
     checkCudaErrors(cudaMalloc((void **) &d_world, sizeof(hittable*)));
-    create_world<<<1, 1>>>(d_list, d_world, d_camera);
+    create_world<<<1, 1>>>(d_list, d_world, d_camera, image_width, image_height);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
