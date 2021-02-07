@@ -1,13 +1,17 @@
-# CMake version
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-# Declare project
-project(FirstRayTracer)
+project(ray-tracing-in-cpp CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-set( CMAKE_C_COMPILER  "gcc" )
+add_subdirectory(src/cpu)
+# add_subdirectory(tests)
 
-add_executable(FirstRayTracer src/main.cpp src/camera.hpp src/color.hpp
-        src/hittable.hpp src/hittable_list.hpp src/material.hpp src/lambertian.hpp
-        src/metal.hpp src/dielectric.hpp src/ray.hpp src/rtweekend.hpp
-        src/sphere.hpp src/vector3.hpp)
+# if Windows, enable both C++, CUDA build toolchains
+if (MSVC)
+    project(ray-tracing-in-cpp CXX CUDA)
+    if (NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 14)
+        set(CMAKE_CUDA_STANDARD_REQUIRED  True)
+    endif()
+
+    add_subdirectory(src/gpu)
+endif()

@@ -1,12 +1,11 @@
 #include <iostream>
-
+#include <time.h>
 #include "camera.hpp"
 #include "rtweekend.hpp"
 #include "hittable_list.hpp"
 #include "sphere.hpp"
 #include "color.hpp"
 #include "material.hpp"
-#include "command_line_tool.hpp"
 #include "lambertian.hpp"
 #include "metal.hpp"
 #include "dielectric.hpp"
@@ -27,7 +26,6 @@ color ray_color(const ray& r, const hittable& world, int depth)
 
         // 'black body' <- the object absorbs all lights
         return color(0, 0,0);
-
 
         point3 target = rec.p + random_in_hemisphere(rec.normal);
         return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
@@ -86,47 +84,13 @@ hittable_list random_scene() {
     return world;
 }
 
-void render(const int image_width, const int image_height, const int samples_per_pixel, const int max_depth,
-            camera cam, hittable_list world) {
-    std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
-
-    unsigned int processed_lines = 0;
-    unsigned int checkpoint = static_cast<int>(image_height / 50);
-    unsigned int cl_width = 55;
-    time_t interval = 0;
-    loading_bar bar = loading_bar(checkpoint, cl_width, image_height);
-
-    for (int j = image_height - 1; j >= 0; --j) {
-
-        time_t t0 = time(NULL);
-
-        for (int i = 0; i < image_width; ++i) {
-            color pixel_color(0, 0,0 );
-            for (int s = 0; s < samples_per_pixel; ++s) {
-                auto u = (i + random_double()) / (image_width - 1);
-                auto v = (j + random_double()) / (image_height - 1);
-                ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, max_depth);
-            }
-            write_color(std::cout, pixel_color, samples_per_pixel);
-        }
-
-        processed_lines++;
-        time_t t1 = time(NULL);
-        time_t took_time = t1 - t0;
-
-        bar.draw(took_time, processed_lines);
-    }
-
-    std::cerr << "\nDone.\n";
-}
 
 int main()
 {
     // configure output image
 
-    const auto aspect_ratio = 3.0 / 2.0;
-    const int image_width = 240;
+    const auto aspect_ratio = 16.0 / 9.0;
+    const int image_width = 400;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
     const int samples_per_pixel = 500;
     const int max_depth = 50;
@@ -135,26 +99,57 @@ int main()
 
     hittable_list world;
 
-    auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
-    world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
+    auto ground_material = make_shared<lambertian>(color(0.6, 1.0, 0.4));
+    auto diffuse_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
+    world.add(make_shared<sphere>(point3(0, -100, -1), 100, diffuse_material));
 
-    auto glass_material = make_shared<dielectric>(1.5);
+    /*
+    for (int i = 1; i < 11; i++) {
+        if (i % 2 == 1) {
+            world.add(make_shared<sphere>(point3(0, 2.5, 0), 0.25 * i, glass_material));
+        } else {
+            world.add(make_shared<sphere>(point3(0, 2.5, 0), -0.25 * i, glass_material));
+        }
+    }
+    */
 
-    world.add(make_shared<sphere>(point3(0, 0, 0), 0.5, glass_material));
-    world.add(make_shared<sphere>(point3(0, 0, 0), -0.75, glass_material));
-    world.add(make_shared<sphere>(point3(0, 0, 0), 1.0, glass_material));
-    world.add(make_shared<sphere>(point3(0, 0, 0), -1.25, glass_material));
-    world.add(make_shared<sphere>(point3(0, 0, 0), 1.5, glass_material));
+    world.add(make_shared<sphere>(point3(0, 1, -1), 1, diffuse_material));
 
     // set camera
 
-    point3 lookfrom(2, 3, 4);
-    point3 lookat(0, 0, 0);
+    point3 lookfrom(0, 0, 0);
+    point3 lookat(0, 0, -1);
     vector3 vup(0, 1, 0);
-    auto dist_to_focus = 2.0;
+    auto dist_to_focus = 1.0;
     auto aperture = 0.1;
 
-    camera cam = camera(lookfrom, lookat, vup, 40, aspect_ratio, aperture, dist_to_focus);
+    camera cam = camera(lookfrom, lookat, vup, 55, aspect_ratio, aperture, dist_to_focus);
 
-    render(image_width, image_height, samples_per_pixel, max_depth, cam, world);
+    // render
+    clock_t start, end;
+    std::cerr << "Rendering a " << image_width << "x" << image_height << " image with " << 50 << " samples per pixel\n";
+    start = clock();
+    std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
+
+    for (int j = image_height-1; j >= 0; --j)
+    {
+        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        for (int i = 0; i < image_width; ++i)
+        {
+            color pixel_color(0, 0,0 );
+            for (int s = 0; s < samples_per_pixel; ++s)
+            {
+                auto u = (i + random_double()) / (image_width - 1);
+                auto v = (j + random_double()) / (image_height - 1);
+                ray r = cam.get_ray(u, v);
+                pixel_color += ray_color(r, world, max_depth);
+            }
+            write_color(std::cout, pixel_color, samples_per_pixel);
+        }
+    }
+    end = clock();
+    double timer_seconds = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    std::cerr << "\ntook " << timer_seconds << " seconds.\n";
+    std::cerr << "\nDone.\n";
 }
