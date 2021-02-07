@@ -16,10 +16,8 @@ public:
     /*
      *  Empty constructor for 3D vector
      */
-    vector3() {
-        e[0] = 0;
-        e[1] = 0;
-        e[2] = 0;
+    vector3() : e{0, 0, 0}{
+        // Do nothing
     }
 
     vector3(double element_0, double element_1, double element_2)
@@ -155,7 +153,7 @@ public:
     friend std::ostream& operator<<(std::ostream &output_stream, vector3 &t);
 
 public:
-    double e[3]{};
+    double e[3];
 };
 
     /*

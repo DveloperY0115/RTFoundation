@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(ray-tracing-in-cpp CXX)
 
+set(CMAKE_CXX_STANDARD 14)
+
 add_subdirectory(src/cpu)
 # add_subdirectory(tests)
 
