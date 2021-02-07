@@ -26,41 +26,63 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
     }
 }
 
-__global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera, int nx, int ny) {
+#define RND (curand_uniform(&local_rand_state))
+
+__global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera, int nx, int ny, curandState *rand_state) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
-        d_list[0] = new sphere(vector3(0,0,-1), 0.5,
-                               new lambertian(color(0.1, 0.2, 0.5)));
-        d_list[1] = new sphere(vector3(0,-100.5,-1), 100,
-                               new lambertian(color(0.8, 0.8, 0.0)));
-        d_list[2] = new sphere(vector3(1,0,-1), 0.5,
-                               new metal(color(0.8, 0.6, 0.2), 0.0));
-        d_list[3] = new sphere(vector3(-1,0,-1), 0.5,
-                               new dielectric(1.5));
-        d_list[4] = new sphere(vector3(-1,0,-1), -0.45,
-                               new dielectric(1.5));
-        *d_world  = new hittable_list(d_list,5);
+        curandState local_rand_state = *rand_state;
 
-        // initialize camera
-        vector3 lookfrom(3, 3, 2);
-        vector3 lookat(0, 0, -1);
+        // earth
+        d_list[0] = new sphere(vector3(0,-1000.0,-1), 1000,
+                               new lambertian(color(0.5, 0.5, 0.5)));
 
-        float dist_to_focus = (lookfrom - lookat).length();
-        float aperture = 2.0f;
-        *d_camera = new camera(
-                lookfrom,
-                lookat,
-                vector3(0, 1, 0),
-                20.0,
-                float(nx)/float(ny),
-                aperture,
-                dist_to_focus
-                );
+        // randomly generated 22 * 22 spheres
+        int i = 1;
+        for (int a = -11; a < 11; a++) {
+            for (int b = -11; b < 11; b++) {
+                float choose_mat = RND;
+                vector3 center(a+RND,0.2,b+RND);
+                if(choose_mat < 0.8f) {
+                    d_list[i++] = new sphere(center, 0.2,
+                                             new lambertian(color(RND*RND, RND*RND, RND*RND)));
+                }
+                else if(choose_mat < 0.95f) {
+                    d_list[i++] = new sphere(center, 0.2,
+                                             new metal(color(0.5f*(1.0f+RND), 0.5f*(1.0f+RND), 0.5f*(1.0f+RND)), 0.5f*RND));
+                }
+                else {
+                    d_list[i++] = new sphere(center, 0.2, new dielectric(1.5));
+                }
+            }
+        }
+
+        // three spheres
+        d_list[i++] = new sphere(vector3(0, 1,0),  1.0, new dielectric(1.5));
+        d_list[i++] = new sphere(vector3(-4, 1, 0), 1.0, new lambertian(color(0.4, 0.2, 0.1)));
+        d_list[i++] = new sphere(vector3(4, 1, 0),  1.0, new metal(color(0.7, 0.6, 0.5), 0.0));
+        *rand_state = local_rand_state;
+        *d_world  = new hittable_list(d_list, 22 * 22 + 1 +3);
+
+        vector3 lookfrom(13,2,3);
+        vector3 lookat(0,0,0);
+        float dist_to_focus = 10.0; (lookfrom-lookat).length();
+        float aperture = 0.1;
+        *d_camera   = new camera(lookfrom,
+                                 lookat,
+                                 vector3(0,1,0),
+                                 30.0,
+                                 float(nx)/float(ny),
+                                 aperture,
+                                 dist_to_focus
+                                 );
     }
 }
 
-__global__ void free_world(hittable** d_list, hittable** d_world, camera **d_camera) {
-    delete *(d_list);
-    delete *(d_list+1);
+__global__ void free_world(hittable **d_list, hittable **d_world, camera **d_camera) {
+    for(int i=0; i < 22*22+1+3; i++) {
+        delete ((sphere *)d_list[i])->mat_ptr;
+        delete d_list[i];
+    }
     delete *d_world;
     delete *d_camera;
 }
@@ -168,14 +190,22 @@ int main() {
     curandState* d_rand_state;
     checkCudaErrors(cudaMalloc((void**) &d_rand_state, num_pixels * sizeof(curandState)));
 
+    // second random state variable for random world generation
+    curandState* d_rand_state2;
+    checkCudaErrors(cudaMalloc((void**) &d_rand_state2, sizeof(curandState)));
+    rand_init<<<1, 1>>>(d_rand_state2);
+    checkCudaErrors(cudaGetLastError());
+    checkCudaErrors(cudaDeviceSynchronize());
+
     // set world and camera
     camera **d_camera;
     checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(camera *)));
     hittable **d_list;
-    checkCudaErrors(cudaMalloc((void**) &d_list, 5 * sizeof(hittable*)));
+    int num_hittables = 22 * 22 + 1 + 3;
+    checkCudaErrors(cudaMalloc((void**) &d_list, num_hittables * sizeof(hittable*)));
     hittable **d_world;
     checkCudaErrors(cudaMalloc((void **) &d_world, sizeof(hittable*)));
-    create_world<<<1, 1>>>(d_list, d_world, d_camera, image_width, image_height);
+    create_world<<<1, 1>>>(d_list, d_world, d_camera, image_width, image_height, d_rand_state2);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaDeviceSynchronize());
 
@@ -217,12 +247,14 @@ int main() {
         }
     }
 
+    // clean up
     checkCudaErrors(cudaDeviceSynchronize());
     free_world<<<1, 1>>>(d_list, d_world, d_camera);
     checkCudaErrors(cudaGetLastError());
     checkCudaErrors(cudaFree(d_camera));
     checkCudaErrors(cudaFree(d_list));
     checkCudaErrors(cudaFree(d_rand_state));
+    checkCudaErrors(cudaFree(d_rand_state2));
     checkCudaErrors(cudaFree(d_world));
     checkCudaErrors(cudaFree(fb));
 
