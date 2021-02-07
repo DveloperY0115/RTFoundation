@@ -97,6 +97,15 @@ __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_
     return vector3(0.0, 0.0, 0.0);  // exceeded recursion
 }
 
+//! \brief Initialize CUDA random state
+//!
+//! \param rand_state a curandState variable
+__global__ void rand_init(curandState *rand_state) {
+    if (threadIdx.x == 0 && blockIdx.x == 0) {
+        curand_init(1984, 0, 0, rand_state);
+    }
+}
+
 //! \brief Initialize rendering system
 //!
 //! This function initializes random states allocated for each pixel on frame buffer
