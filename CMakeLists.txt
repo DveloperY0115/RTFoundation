@@ -16,6 +16,7 @@ endif()
 include_directories(src/cpu)
 include_directories(src/gpu)
 
+add_subdirectory(tests)
 
 # renderer using cpu only
 add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
