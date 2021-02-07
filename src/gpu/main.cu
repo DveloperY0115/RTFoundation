@@ -2,16 +2,17 @@
 // Created by dveloperY0115 on 1/8/2021.
 //
 
-#include <iostream>
-#include <time.h>
-#include <float.h>
-#include <curand_kernel.h>
+#include "rtweekend-gpu.hpp"
 #include "vector3.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
+
 #include "material.hpp"
+#include "lambertian.hpp"
+#include "metal.hpp"
+#include "dielectric.hpp"
 
 #define checkCudaErrors(val) check_cuda( (val), #val, __FILE__, __LINE__ )
 
@@ -27,15 +28,17 @@ void check_cuda(cudaError_t result, char const* const func, const char* const fi
 
 __global__ void create_world(hittable **d_list, hittable **d_world, camera **d_camera) {
     if (threadIdx.x == 0 && blockIdx.x == 0) {
-        d_list[0] = new sphere(vector3(0, 0, -1), 0.5,
-                                 new lambertian(color(0.8, 0.3, 0.3)));
-        d_list[1] = new sphere(vector3(0, -100.5, -1), 100,
-                                  new lambertian(color(0.8, 0.8, 0.0)));
-        d_list[2] = new sphere(vector3(1, 0, -1), 0.5,
-                               new metal(color(0.8, 0.6, 0.2), 1.0));
-        d_list[3] = new sphere(vector3(-1, 0, -1), 0.5,
-                               new metal(color(0.8, 0.8, 0.8), 0.3));
-        *d_world    = new hittable_list(d_list,4);
+        d_list[0] = new sphere(vector3(0,0,-1), 0.5,
+                               new lambertian(color(0.1, 0.2, 0.5)));
+        d_list[1] = new sphere(vector3(0,-100.5,-1), 100,
+                               new lambertian(color(0.8, 0.8, 0.0)));
+        d_list[2] = new sphere(vector3(1,0,-1), 0.5,
+                               new metal(color(0.8, 0.6, 0.2), 0.0));
+        d_list[3] = new sphere(vector3(-1,0,-1), 0.5,
+                               new dielectric(1.5));
+        d_list[4] = new sphere(vector3(-1,0,-1), -0.45,
+                               new dielectric(1.5));
+        *d_world  = new hittable_list(d_list,5);
         *d_camera = new camera();
     }
 }
@@ -48,21 +51,28 @@ __global__ void free_world(hittable** d_list, hittable** d_world, camera **d_cam
 }
 
 __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_rand_state) {
+
     ray cur_ray = r;
     vector3 cur_attenuation = vector3(1.0, 1.0, 1.0);
 
     for (int i = 0; i < 50; i++) {
         hit_record rec;
+
+        // while ray keeps bouncing off from objects, iterate
         if ((*world)->hit(cur_ray, 0.001f, FLT_MAX, rec)) {
             ray scattered;
             vector3 attenuation;
+
+            // if the material scatters the ray, track it
             if (rec.mat_ptr->scatter(cur_ray, rec, attenuation, scattered, local_rand_state)) {
                 cur_attenuation *= attenuation;
                 cur_ray = scattered;
             } else {
+                // otherwise, it's a black body (an object which absorbs all lights)
                 return vector3(0.0, 0.0, 0.0);
             }
         } else {
+            // ray hit nothing. it's from the background, not an object in the scene
             vector3 unit_direction = unit_vector(cur_ray.direction());
             float t = 0.5f * (unit_direction.y() + 1.0f);
             vector3 color = (1.0f - t) * vector3(1.0, 1.0, 1.0) + t * vector3(0.5, 0.7, 1.0);
@@ -72,6 +82,12 @@ __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_
     return vector3(0.0, 0.0, 0.0);  // exceeded recursion
 }
 
+//! \brief Initialize rendering system
+//!
+//! This function
+//! \param max_x width of the image
+//! \param max_y height of the image
+//! \param rand_state
 __global__ void render_init(int max_x, int max_y, curandState* rand_state) {
     unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -84,7 +100,8 @@ __global__ void render_init(int max_x, int max_y, curandState* rand_state) {
     curand_init(1984, pixel_index, 0, &rand_state[pixel_index]);
 }
 
-__global__ void render(vector3* fb, int max_x, int max_y, int num_samples, camera** cam, hittable **world, curandState* rand_state) {
+__global__ void render(vector3* fb, int max_x, int max_y, int num_samples,
+                       camera** cam, hittable **world, curandState* rand_state) {
     // get global pixel coordinate
     unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
@@ -126,13 +143,13 @@ int main() {
 
     // set random state
     curandState* d_rand_state;
-    checkCudaErrors(cudaMalloc((void**) &d_rand_state, num_pixels*sizeof(curandState)));
+    checkCudaErrors(cudaMalloc((void**) &d_rand_state, num_pixels * sizeof(curandState)));
 
     // set world and camera
     camera **d_camera;
     checkCudaErrors(cudaMalloc((void **)&d_camera, sizeof(camera *)));
     hittable **d_list;
-    checkCudaErrors(cudaMalloc((void**) &d_list, 4 * sizeof(hittable*)));
+    checkCudaErrors(cudaMalloc((void**) &d_list, 5 * sizeof(hittable*)));
     hittable **d_world;
     checkCudaErrors(cudaMalloc((void **) &d_world, sizeof(hittable*)));
     create_world<<<1, 1>>>(d_list, d_world, d_camera);

@@ -13,6 +13,10 @@ if (NOT DEFINED CMAKE_CUDA_STANDARD)
     set(CMAKE_CUDA_STANDARD_REQUIRED  True)
 endif()
 
+include_directories(src/cpu)
+include_directories(src/gpu)
+
+
 # renderer using cpu only
 add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
         src/cpu/hittable.hpp src/cpu/hittable_list.hpp src/cpu/material.hpp src/cpu/lambertian.hpp
@@ -20,16 +24,9 @@ add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
         src/cpu/sphere.hpp src/cpu/vector3.hpp)
 
 # renderer using gpu acceleration
-add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp)
-
-# intermediate
-add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp src/cpu-to-gpu/ray.hpp src/gpu/camera.hpp)
-
-set_target_properties(
-        rt-convert
-        PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON)
+add_executable(rt-cuda src/gpu/main.cu src/gpu/rtweekend-gpu.hpp src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
+        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp src/gpu/lambertian.hpp
+        src/gpu/metal.hpp src/gpu/dielectric.hpp)
 
 set_target_properties(
         rt-cuda
