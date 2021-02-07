@@ -99,10 +99,10 @@ __device__ vector3 ray_color(const ray& r, hittable **world, curandState *local_
 
 //! \brief Initialize rendering system
 //!
-//! This function
+//! This function initializes random states allocated for each pixel on frame buffer
 //! \param max_x width of the image
 //! \param max_y height of the image
-//! \param rand_state
+//! \param rand_state an array of curandState variables
 __global__ void render_init(int max_x, int max_y, curandState* rand_state) {
     unsigned int x = threadIdx.x + blockIdx.x * blockDim.x;
     unsigned int y = threadIdx.y + blockIdx.y * blockDim.y;
