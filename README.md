@@ -19,7 +19,7 @@ This simple renderer contains fundamental features of modern physically based re
 Plans for Future Updates
 -------------
 - **CPU multi-threading support**
-- **GPU support (will be implemented using CUDA)**
+- **[Complete] GPU support (will be implemented using CUDA)**
 - More geometry
 - More materials
 - Texture support
@@ -31,14 +31,16 @@ Project Structure
 ```
 .
 ├── src                     # Source files
-├── .github/workflows       # CI scripts                  
+    ├── cpu                 # CPU version
+    ├── gpu                 # GPU version (Requires CUDA 10.1 or higher)
+├── .github/workflows       # CI scripts                 
 ├── .gitignore              # .gitignore file
 ├── CMakeLists.txt          # CMakeLists.txt file containing project settings & build options                   
 ├── LICENSE                 # License info of this project
 └── README.md               # the file you are reading
 ```
 
-and under `src` directory there are:
+under `src/cpu` directory there are:
 ```
 .
 ├── camera.hpp              # camera class of FirstRayTracer
@@ -55,3 +57,5 @@ and under `src` directory there are:
 ├── sphere.hpp              # sphere class which is a derived class of hittable
 └── vector3.hpp             # vector3 class which defines the fundamental ADT of this renderer
 ```
+
+and most of files under `src/gpu` are written based on the CPU implementation, thus structure and design principle are almost identical.
