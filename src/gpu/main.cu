@@ -6,6 +6,7 @@
 #include "vector3.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
+#include "moving_sphere.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
 
