@@ -13,8 +13,8 @@ public:
             double aspect_ratio,
             double aperture,
             double focus_dist,
-            double _time0 = 0.0,
-            double _time1 = 0.0
+            float _time0 = 0.0,
+            float _time1 = 0.0
             ) {
         auto theta = degrees_to_radians(vfov);
         auto h = tan(theta/2);
@@ -52,7 +52,7 @@ private:
     vector3 horizontal;
     vector3 vertical;
     double lens_radius;
-    double time0, time1;
+    float time0, time1;
 };
 
 #endif

@@ -15,7 +15,7 @@ public:
     __device__ ray() {
         // Do nothing
     }
-    __device__ ray(const vector3& origin, const vector3& direction, double time = 0.0)
+    __device__ ray(const vector3& origin, const vector3& direction, float time = 0.0)
             : orig(origin), dir(direction), tm(time) {
         // Do nothing
     }
@@ -32,14 +32,14 @@ public:
         return orig + t * dir;
     }
 
-    __device__ double time() const {
+    __device__ float time() const {
         return tm;
     }
 
 public:
     vector3 orig;
     vector3 dir;
-    double tm;
+    float tm;
 };
 
 #endif //FIRSTRAYTRACER_RAY_HPP
