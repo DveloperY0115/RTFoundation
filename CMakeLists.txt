@@ -1,5 +1,12 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
+project(ray-tracing-in-cpp CXX)
+
+set(CMAKE_CXX_STANDARD 14)
+
+add_subdirectory(src/cpu)
+# add_subdirectory(tests)
+
 # if Windows, enable both C++, CUDA build toolchains
 if (MSVC)
     project(ray-tracing-in-cpp CXX CUDA)
@@ -8,30 +15,5 @@ if (MSVC)
         set(CMAKE_CUDA_STANDARD_REQUIRED  True)
     endif()
 
-    # renderer using gpu acceleration
-    add_executable(rt-cuda src/gpu/main.cu src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-            src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp)
-
-    # intermediate
-    add_executable(rt-convert src/cpu-to-gpu/main.cu src/cpu-to-gpu/vector3.hpp)
-
-include_directories(src/cpu)
-include_directories(src/gpu)
-
-add_subdirectory(tests)
-
-# renderer using cpu only
-add_executable(rt-cpu src/cpu/main.cpp src/cpu/camera.hpp src/cpu/color.hpp
-        src/cpu/hittable.hpp src/cpu/hittable_list.hpp src/cpu/material.hpp src/cpu/lambertian.hpp
-        src/cpu/metal.hpp src/cpu/dielectric.hpp src/cpu/ray.hpp src/cpu/rtweekend.hpp
-        src/cpu/sphere.hpp src/cpu/vector3.hpp)
-
-# renderer using gpu acceleration
-add_executable(rt-cuda src/gpu/main.cu src/gpu/rtweekend-gpu.hpp src/gpu/vector3.hpp src/gpu/ray.hpp src/gpu/camera.hpp
-        src/gpu/hittable.hpp src/gpu/sphere.hpp src/gpu/hittable_list.hpp src/gpu/material.hpp src/gpu/lambertian.hpp
-        src/gpu/metal.hpp src/gpu/dielectric.hpp)
-
-set_target_properties(
-        rt-cuda
-        PROPERTIES
-        CUDA_SEPARABLE_COMPILATION ON)
+    add_subdirectory(src/gpu)
+endif()
