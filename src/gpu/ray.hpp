@@ -15,8 +15,8 @@ public:
     __device__ ray() {
         // Do nothing
     }
-    __device__ ray(const vector3& origin, const vector3& direction)
-            : orig(origin), dir(direction) {
+    __device__ ray(const vector3& origin, const vector3& direction, double time = 0.0)
+            : orig(origin), dir(direction), tm(time) {
         // Do nothing
     }
 
