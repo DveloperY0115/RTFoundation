@@ -8,5 +8,7 @@ build
 .vs
 out
 
+CMakeSettings.json
+
 # CUDA profile results
 *.nsight-cuprof-report
