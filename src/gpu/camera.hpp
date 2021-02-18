@@ -12,7 +12,9 @@ public:
             double vfov, // vertical field-of-view in degrees
             double aspect_ratio,
             double aperture,
-            double focus_dist
+            double focus_dist,
+            float _time0 = 0.0,
+            float _time1 = 0.0
             ) {
         auto theta = degrees_to_radians(vfov);
         auto h = tan(theta/2);
@@ -29,6 +31,8 @@ public:
         lower_left_corner = origin - horizontal/2 - vertical/2 - focus_dist * w;
 
         lens_radius = aperture / 2;
+        time0 = _time0;
+        time1 = _time1;
     }
     __device__ ray get_ray(float s, float t, curandState* local_rand_state) const {
         vector3 rd = lens_radius * random_in_unit_disk(local_rand_state);
@@ -36,7 +40,8 @@ public:
 
         return ray(
                 origin + offset,
-                lower_left_corner + s * horizontal + t * vertical - origin - offset
+                lower_left_corner + s * horizontal + t * vertical - origin - offset,
+                curand_uniform(local_rand_state) * (time1 - time0) + time0
         );
     }
 
@@ -47,6 +52,7 @@ private:
     vector3 horizontal;
     vector3 vertical;
     double lens_radius;
+    float time0, time1;
 };
 
 #endif

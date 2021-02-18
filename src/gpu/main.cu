@@ -6,6 +6,7 @@
 #include "vector3.hpp"
 #include "ray.hpp"
 #include "sphere.hpp"
+#include "moving_sphere.hpp"
 #include "hittable_list.hpp"
 #include "camera.hpp"
 
@@ -43,14 +44,18 @@ __global__ void create_world(hittable **d_list, hittable **d_world, camera **d_c
                 float choose_mat = RND;
                 vector3 center(a+RND,0.2,b+RND);
                 if(choose_mat < 0.8f) {
-                    d_list[i++] = new sphere(center, 0.2,
+                    // diffuse
+                    vector3 center2 = center + vector3(0, RND, 0);
+                    d_list[i++] = new moving_sphere(center, center2, 0.0, 1.0, 0.2,
                                              new lambertian(color(RND*RND, RND*RND, RND*RND)));
                 }
                 else if(choose_mat < 0.95f) {
+                    // metal
                     d_list[i++] = new sphere(center, 0.2,
                                              new metal(color(0.5f*(1.0f+RND), 0.5f*(1.0f+RND), 0.5f*(1.0f+RND)), 0.5f*RND));
                 }
                 else {
+                    // dielectric
                     d_list[i++] = new sphere(center, 0.2, new dielectric(1.5));
                 }
             }
@@ -67,13 +72,17 @@ __global__ void create_world(hittable **d_list, hittable **d_world, camera **d_c
         vector3 lookat(0,0,0);
         float dist_to_focus = 10.0; (lookfrom-lookat).length();
         float aperture = 0.1;
+        float shutter_open_at = 0.0;
+        float shutter_close_at = 1.0;
         *d_camera   = new camera(lookfrom,
                                  lookat,
                                  vector3(0,1,0),
                                  30.0,
                                  float(nx)/float(ny),
                                  aperture,
-                                 dist_to_focus
+                                 dist_to_focus,
+                                 shutter_open_at,
+                                 shutter_close_at
                                  );
     }
 }
@@ -178,7 +187,7 @@ int main() {
     const float aspect_ratio = 16.0 / 9.0;
     const int image_width = 1600;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    static const int num_samples = 50;
+    static const int num_samples = 100;
 
     // allocate Frame Buffer for rendering
     int num_pixels = image_width * image_height;

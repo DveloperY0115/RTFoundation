@@ -1,11 +1,14 @@
 .idea
 
 cmake-build-debug
+build
 .DS_Store
 
 # VS related directories
 .vs
 out
+
+CMakeSettings.json
 
 # CUDA profile results
 *.nsight-cuprof-report

@@ -32,7 +32,7 @@ public:
             refracted_direction = refract(unit_direction, rec.normal, refraction_ratio);
         }
 
-        scattered = ray(rec.p, refracted_direction);
+        scattered = ray(rec.p, refracted_direction, r_in.time());
         return true;
     }
 
