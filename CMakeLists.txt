@@ -9,13 +9,10 @@ add_subdirectory(src/cpu)
 
 # if Windows, enable both C++, CUDA build toolchains
 if (MSVC)
-    find_package(CUDA)
-    if (CUDA_FOUND)
-        project(ray-tracing-in-cpp CXX CUDA)
-        if (NOT DEFINED CMAKE_CUDA_STANDARD)
-            set(CMAKE_CUDA_STANDARD 14)
-            set(CMAKE_CUDA_STANDARD_REQUIRED  True)
-        endif()
+    project(ray-tracing-in-cpp CXX CUDA)
+    if (NOT DEFINED CMAKE_CUDA_STANDARD)
+        set(CMAKE_CUDA_STANDARD 14)
+        set(CMAKE_CUDA_STANDARD_REQUIRED  True)
     endif()
 
     add_subdirectory(src/gpu)
