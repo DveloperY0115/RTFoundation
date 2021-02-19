@@ -1,4 +1,4 @@
-name: Ubuntu-CUDA
+name: Ubuntu
 
 on:
   push:
