@@ -8,6 +8,7 @@ C++ Implementation of basic ray tracer based on the book [Ray Tracing in One Wee
 [![Windows-CUDA](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/windows-cuda.yml/badge.svg)](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/windows-cuda.yml)
 [![Ubuntu](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/ubuntu.yml)
 [![Ubuntu-CUDA](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/ubuntu-cuda.yml/badge.svg)](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/ubuntu-cuda.yml)
+[![macOS](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/macos.yml/badge.svg)](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/macos.yml)
 
 Features
 -------------
