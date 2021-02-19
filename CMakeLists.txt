@@ -7,6 +7,23 @@ set(CMAKE_CXX_STANDARD 14)
 add_subdirectory(src/cpu)
 # add_subdirectory(tests)
 
+if (MSVC)
+    message(STATUS ">>> MSVC")
+endif()
+
+if (APPLE)
+    message(STATUS ">>> macOS")
+endif()
+
+if(UNIX AND NOT APPLE)
+    set(LINUX TRUE)
+    if(LINUX)
+        message(STATUS ">>> Linux")
+    else()
+        message(STATUS ">>> Not Linux")
+    endif()
+endif()
+
 # if Windows, enable both C++, CUDA build toolchains
 if (MSVC OR LINUX)
     find_package(CUDA)
