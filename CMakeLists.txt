@@ -8,7 +8,7 @@ add_subdirectory(src/cpu)
 # add_subdirectory(tests)
 
 # if Windows, enable both C++, CUDA build toolchains
-if (MSVC)
+if (MSVC OR LINUX)
     find_package(CUDA)
     if (CUDA_FOUND)
         project(ray-tracing-in-cpp CXX CUDA)
