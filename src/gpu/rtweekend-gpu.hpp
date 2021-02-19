@@ -9,6 +9,7 @@
 //! Commonly used headers
 #include <iostream>
 #include <time.h>
+#include <float.h>
 #include <curand_kernel.h>
 
 __device__ const double pi = 3.1415926535897932385;
