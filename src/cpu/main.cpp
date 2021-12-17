@@ -1,6 +1,5 @@
 #include <array>
 #include <iostream>
-#include <time.h>
 #include <omp.h>
 
 #include "Cameras/Camera.hpp"
