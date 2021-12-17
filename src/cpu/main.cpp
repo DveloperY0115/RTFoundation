@@ -88,10 +88,10 @@ int main() {
 
     // configure output image
     const auto AspectRatio = 16.0 / 9.0;
-    const int ImageWidth = 400;
+    const int ImageWidth = 1600;
     const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
-    const int SamplesPerPixel = 50;
-    const int MaxRecursion = 50;
+    const int SamplesPerPixel = 100;
+    const int MaxRecursion = 25;
 
     // set world
 
@@ -117,7 +117,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, world, ImageBuffer)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
