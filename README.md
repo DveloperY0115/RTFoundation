@@ -24,8 +24,8 @@ Also, it **supports GPU accelerated rendering on Windows having CUDA 10 or highe
 
 Plans for Future Updates
 -------------
-- [x] **CPU multi-threading support**
-- [x] **GPU support (will be implemented using CUDA)**
+- [x] **CPU multi-threading support (OpenMP)**
+- [x] **GPU support (CUDA)**
 - [ ] More geometry
 - [ ] More materials
 - [ ] Texture support
