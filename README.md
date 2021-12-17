@@ -24,13 +24,13 @@ Also, it **supports GPU accelerated rendering on Windows having CUDA 10 or highe
 
 Plans for Future Updates
 -------------
-- **CPU multi-threading support**
-- **[Complete] GPU support (will be implemented using CUDA)**
-- More geometry
-- More materials
-- Texture support
-- **Command-line support**
-- File I/O (to set up large, complex scene within a file and then manage it easily)
+- [ ] **CPU multi-threading support**
+- [x] GPU support (will be implemented using CUDA)
+- [ ] More geometry
+- [ ] More materials
+- [ ] Texture support
+- [ ] **Command-line support**
+- [ ] File I/O (to set up large, complex scene within a file and then manage it easily)
 
 Project Structure 
 -------------
