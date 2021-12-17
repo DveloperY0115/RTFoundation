@@ -28,12 +28,12 @@ void writeColor(std::ostream &out, Color PixelColor, int SamplesPerPixel)
 }
 
 void writeColor(
-        unsigned int PixelX,
-        unsigned int PixelY,
+        int PixelX,
+        int PixelY,
         Color PixelColor,
-        unsigned int SamplesPerPixel,
-        unsigned int ImageWidth,
-        unsigned int ImageHeight,
+        int SamplesPerPixel,
+        int ImageWidth,
+        int ImageHeight,
         int* ImageBuffer) {
     auto r = PixelColor.X();
     auto g = PixelColor.Y();
@@ -45,14 +45,21 @@ void writeColor(
     g = sqrt(scale * g);
     b = sqrt(scale * b);
 
-    unsigned int IndexX = PixelX;
-    unsigned int IndexY = -PixelY + (ImageHeight - 1);
-    unsigned int BufferIndex = 3 * ImageWidth * IndexY + IndexX;
+    int IndexX = PixelX;
+    int IndexY = -PixelY + (ImageHeight - 1);
+    unsigned int BufferIndex = 3 * ImageWidth * IndexY + 3 * IndexX;
 
     ImageBuffer[BufferIndex] = static_cast<int>(256 * clamp(r, 0.0, 0.999));
     ImageBuffer[BufferIndex + 1] = static_cast<int>(256 * clamp(g, 0.0, 0.999));
     ImageBuffer[BufferIndex + 2] = static_cast<int>(256 * clamp(b, 0.0, 0.999));
 }
 
+void flushBuffer(std::ostream &out, unsigned int ImageWidth, unsigned int ImageHeight, int* ImageBuffer) {
+    for (int i = 0; i < 3 * ImageWidth * ImageHeight; i += 3) {
+        out << ImageBuffer[i] << ' '
+            << ImageBuffer[i + 1] << ' '
+            << ImageBuffer[i + 2] << '\n';
+    }
+}
 
 #endif //RTFOUNDATION_COLOR_HPP
