@@ -7,6 +7,6 @@ add_executable(rt-cpu main.cpp Cameras/Camera.hpp Colors/Colors.hpp
         Materials/Metal.hpp Materials/Dielectric.hpp Rays/Ray.hpp rtweekend.hpp
         Geometry/Sphere.hpp Math/Vector3.hpp)
 
-#if(OpenMP_CXX_FOUND)
-#    target_link_libraries(rt-cpu PUBLIC OpenMP::OpenMP_CXX)
-#endif()
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(rt-cpu PUBLIC OpenMP::OpenMP_CXX)
+endif()

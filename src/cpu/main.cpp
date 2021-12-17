@@ -1,6 +1,7 @@
+#include <array>
 #include <iostream>
 #include <time.h>
-// #include <omp.h>
+#include <omp.h>
 
 #include "Cameras/Camera.hpp"
 #include "rtweekend.hpp"
@@ -12,15 +13,13 @@
 #include "Materials/Metal.hpp"
 #include "Materials/Dielectric.hpp"
 
-Color computeRayColor(const Ray& r, const Hittable& world, int depth)
-{
+Color computeRayColor(const Ray& r, const Hittable& world, int depth) {
     HitRecord Record;
     // If we've exceeded the Ray bounce limit, no more light is gathered.
     if (depth <= 0)
             return Color(0, 0, 0);
 
-    if (world.Hit(r, 0.001, Infinity, Record))
-    {
+    if (world.Hit(r, 0.001, Infinity, Record)) {
         Ray scatteredRay;
         Color Attenuation;
         if (Record.MaterialPtr->Scatter(r, Record, Attenuation, scatteredRay))
@@ -83,13 +82,15 @@ HittableList generateRandomScene() {
 }
 
 
-int main()
-{
+int main() {
+    // configure OpenMP
+    omp_set_num_threads(8);
+
     // configure output image
     const auto AspectRatio = 16.0 / 9.0;
     const int ImageWidth = 400;
     const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
-    const int SamplesPerPixel = 500;
+    const int SamplesPerPixel = 50;
     const int MaxRecursion = 50;
 
     // set world
@@ -108,33 +109,39 @@ int main()
     Camera cam = Camera(LookFrom, LookAt, UpVector, 20, AspectRatio, Aperture, DistanceToFocus);
 
     // render
-    clock_t start, end;
-    std::cerr << "Rendering a " << ImageWidth << "x" << ImageHeight << " image with " << 50 << " samples per pixel\n";
-    start = clock();
+    double start, end;
+    std::cerr << "Rendering a " << ImageWidth << "x" << ImageHeight << " image with " << SamplesPerPixel << " samples per pixel\n";
+    start = omp_get_wtime();
     std::cout << "P3\n" << ImageWidth << " " << ImageHeight << "\n255\n";
 
     // initialize image buffer
-    int ImageBuffer[3 * ImageWidth * ImageHeight];
+    int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    for (int j = ImageHeight - 1; j >= 0; --j)
+    #pragma omp parallel
     {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-        for (int i = 0; i < ImageWidth; ++i)
-        {
-            Color PixelColor(0, 0, 0 );
-            for (int s = 0; s < SamplesPerPixel; ++s)
-            {
-                auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
-                auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
-                Ray r = cam.getRay(u, v);
-                PixelColor += computeRayColor(r, world, MaxRecursion);
+        #pragma omp for // trace rays & compute pixel colors
+        for (int j = ImageHeight - 1; j >= 0; --j) {
+            for (int i = 0; i < ImageWidth; ++i) {
+                Color PixelColor(0, 0, 0);
+                for (int s = 0; s < SamplesPerPixel; ++s) {
+                    auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
+                    auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
+                    Ray r = cam.getRay(u, v);
+                    PixelColor += computeRayColor(r, world, MaxRecursion);
+                }
+                writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
             }
-            // writeColor(std::cout, PixelColor, SamplesPerPixel);
-            writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
         }
     }
-    end = clock();
-    double timer_seconds = ((double)(end - start)) / CLOCKS_PER_SEC;
+
+    // flush image buffer
+    flushBuffer(std::cout, ImageWidth, ImageHeight, ImageBuffer);
+
+    // free allocated memory
+    delete[] ImageBuffer;
+
+    end = omp_get_wtime();
+    double timer_seconds = ((double)(end - start));
 
     std::cerr << "\ntook " << timer_seconds << " seconds.\n";
     std::cerr << "\nDone.\n";
