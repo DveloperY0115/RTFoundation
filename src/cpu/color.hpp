@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/14.
 //
 
-#ifndef FIRSTRAYTRACER_COLOR_HPP
-#define FIRSTRAYTRACER_COLOR_HPP
+#ifndef RTFOUNDATION_COLOR_HPP
+#define RTFOUNDATION_COLOR_HPP
 
 #include "Vector3.hpp"
 
@@ -28,4 +28,4 @@ void write_color(std::ostream &out, Color pixel_color, int samples_per_pixel)
 }
 
 
-#endif //FIRSTRAYTRACER_COLOR_HPP
+#endif //RTFOUNDATION_COLOR_HPP

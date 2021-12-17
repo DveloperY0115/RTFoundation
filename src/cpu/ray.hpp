@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/04/22.
 //
 
-#ifndef FIRSTRAYTRACER_RAY_HPP
-#define FIRSTRAYTRACER_RAY_HPP
+#ifndef RTFOUNDATION_RAY_HPP
+#define RTFOUNDATION_RAY_HPP
 
 #include <cmath>
 #include <cstdlib>
@@ -42,4 +42,4 @@ public:
     Vector3 dir;
 };
 
-#endif //FIRSTRAYTRACER_RAY_HPP
+#endif //RTFOUNDATION_RAY_HPP

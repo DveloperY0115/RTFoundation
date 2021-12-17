@@ -2,8 +2,8 @@
 // Created by dveloperY0115 on 12/29/2020.
 //
 
-#ifndef FIRSTRAYTRACER_LAMBERTIAN_H
-#define FIRSTRAYTRACER_LAMBERTIAN_H
+#ifndef RTFOUNDATION_LAMBERTIAN_H
+#define RTFOUNDATION_LAMBERTIAN_H
 
 #include "material.hpp"
 
@@ -43,4 +43,4 @@ public:
     Color albedo;
 };
 
-#endif //FIRSTRAYTRACER_LAMBERTIAN_H
+#endif //RTFOUNDATION_LAMBERTIAN_H

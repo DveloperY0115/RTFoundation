@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/04/27.
 //
 
-#ifndef FIRSTRAYTRACER_SPHERE_HPP
-#define FIRSTRAYTRACER_SPHERE_HPP
+#ifndef RTFOUNDATION_SPHERE_HPP
+#define RTFOUNDATION_SPHERE_HPP
 
 #include "hittable.hpp"
 #include "Vector3.hpp"
@@ -83,4 +83,4 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
     return false;
 }
 
-#endif //FIRSTRAYTRACER_SPHERE_HPP
+#endif //RTFOUNDATION_SPHERE_HPP

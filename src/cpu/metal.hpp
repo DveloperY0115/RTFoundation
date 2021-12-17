@@ -2,8 +2,8 @@
 // Created by dveloperY0115 on 12/29/2020.
 //
 
-#ifndef FIRSTRAYTRACER_METAL_H
-#define FIRSTRAYTRACER_METAL_H
+#ifndef RTFOUNDATION_METAL_H
+#define RTFOUNDATION_METAL_H
 
 #include "material.hpp"
 
@@ -42,4 +42,4 @@ public:
     double fuzz;
 };
 
-#endif //FIRSTRAYTRACER_METAL_H
+#endif //RTFOUNDATION_METAL_H

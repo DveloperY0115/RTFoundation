@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/21.
 //
 
-#ifndef FIRSTRAYTRACER_MATERIAL_HPP
-#define FIRSTRAYTRACER_MATERIAL_HPP
+#ifndef RTFOUNDATION_MATERIAL_HPP
+#define RTFOUNDATION_MATERIAL_HPP
 
 
 #include "ray.hpp"
@@ -31,4 +31,4 @@ public:
 
 
 
-#endif //FIRSTRAYTRACER_MATERIAL_HPP
+#endif //RTFOUNDATION_MATERIAL_HPP

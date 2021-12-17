@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_RTWEEKEND_HPP
-#define FIRSTRAYTRACER_RTWEEKEND_HPP
+#ifndef RTFOUNDATION_RTWEEKEND_HPP
+#define RTFOUNDATION_RTWEEKEND_HPP
 
 #include <cmath>
 #include <cstdlib>
@@ -91,4 +91,4 @@ inline double degress_to_radians(double degrees)
 #include "ray.hpp"
 #include "Vector3.hpp"
 
-#endif //FIRSTRAYTRACER_RTWEEKEND_HPP
+#endif //RTFOUNDATION_RTWEEKEND_HPP

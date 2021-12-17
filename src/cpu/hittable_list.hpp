@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_HITTABLE_LIST_HPP
-#define FIRSTRAYTRACER_HITTABLE_LIST_HPP
+#ifndef RTFOUNDATION_HITTABLE_LIST_HPP
+#define RTFOUNDATION_HITTABLE_LIST_HPP
 
 #include "hittable.hpp"
 
@@ -66,4 +66,4 @@ bool hittable_list::hit(const ray& r, double t_min, double t_max, hit_record& re
     return hit_anything;
 }
 
-#endif //FIRSTRAYTRACER_HITTABLE_LIST_HPP
+#endif //RTFOUNDATION_HITTABLE_LIST_HPP

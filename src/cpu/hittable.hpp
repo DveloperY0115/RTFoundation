@@ -2,8 +2,8 @@
 // Created by 유승우 on 2020/04/27.
 //
 
-#ifndef FIRSTRAYTRACER_HITTABLE_HPP
-#define FIRSTRAYTRACER_HITTABLE_HPP
+#ifndef RTFOUNDATION_HITTABLE_HPP
+#define RTFOUNDATION_HITTABLE_HPP
 
 #include "rtweekend.hpp"
 #include "ray.hpp"
@@ -42,4 +42,4 @@ public:
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const = 0;
 };
 
-#endif //FIRSTRAYTRACER_HITTABLE_HPP
+#endif //RTFOUNDATION_HITTABLE_HPP

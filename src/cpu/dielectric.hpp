@@ -2,8 +2,8 @@
 // Created by dveloperY0115 on 12/29/2020.
 //
 
-#ifndef FIRSTRAYTRACER_DIELECTRIC_H
-#define FIRSTRAYTRACER_DIELECTRIC_H
+#ifndef RTFOUNDATION_DIELECTRIC_H
+#define RTFOUNDATION_DIELECTRIC_H
 
 #include "material.hpp"
 
@@ -49,4 +49,4 @@ private:
     }
 };
 
-#endif //FIRSTRAYTRACER_DIELECTRIC_H
+#endif //RTFOUNDATION_DIELECTRIC_H
