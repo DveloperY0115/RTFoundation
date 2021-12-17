@@ -6,7 +6,7 @@
 #define FIRSTRAYTRACER_SPHERE_HPP
 
 #include "hittable.hpp"
-#include "vector3.hpp"
+#include "Vector3.hpp"
 
 /**
  * Sphere class which defines a sphere object that can interact with rays in the scene
@@ -15,14 +15,14 @@ class sphere: public hittable
 {
 public:
     sphere() {}
-    sphere(point3 cen, double r, shared_ptr<material> m)
+    sphere(Point3 cen, double r, shared_ptr<material> m)
     : center(cen), radius(r), mat_ptr(m) {};
 
     virtual bool hit(const ray& r, double t_min, double t_max, hit_record& rec) const;
 
     // member variables of 'sphere'
 public:
-    vector3 center;
+    Vector3 center;
     double radius;
     shared_ptr<material> mat_ptr;
 };
@@ -37,7 +37,7 @@ public:
  */
 bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) const
 {
-    vector3 oc = r.origin() - center;
+    Vector3 oc = r.origin() - center;
     auto a = r.direction().length_squared();
     auto half_b = dot_product(oc, r.direction());
     auto c = oc.length_squared() - radius*radius;
@@ -58,7 +58,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
             // the point of the surface that was hit by the ray
             rec.p = r.at(rec.t);
             // here, we define a normal vector to point outward
-            vector3 outward_normal = (rec.p - center) / radius;
+            Vector3 outward_normal = (rec.p - center) / radius;
             // compare the direction of the ray & outward_normal
             // set the normal, opposite to the direction where light came from
             rec.set_face_normal(r, outward_normal);
@@ -73,7 +73,7 @@ bool sphere::hit(const ray& r, double t_min, double t_max, hit_record& rec) cons
         {
             rec.t = temp;
             rec.p = r.at(rec.t);
-            vector3 outward_normal = (rec.p - center) / radius;
+            Vector3 outward_normal = (rec.p - center) / radius;
             rec.set_face_normal(r, outward_normal);
             rec.mat_ptr = mat_ptr;
             return true;

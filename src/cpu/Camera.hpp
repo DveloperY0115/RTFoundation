@@ -2,18 +2,18 @@
 // Created by 유승우 on 2020/05/15.
 //
 
-#ifndef FIRSTRAYTRACER_CAMERA_HPP
-#define FIRSTRAYTRACER_CAMERA_HPP
+#ifndef RTFOUNDATION_CAMERA_HPP
+#define RTFOUNDATION_CAMERA_HPP
 
 #include "rtweekend.hpp"
 
-class camera
+class Camera
 {
 public:
-    camera(
-            point3 lookfrom,
-            point3 lookat,
-            vector3 vup,
+    Camera(
+            Point3 lookfrom,
+            Point3 lookat,
+            Vector3 vup,
             double vfov, // vertical field-of-view in degrees
             double aspect_ratio,
             double aperture,
@@ -38,8 +38,8 @@ public:
 
     ray get_ray(double s, double t) const
     {
-        vector3 rd = lens_radius * random_in_unit_disk();
-        vector3 offset = u * rd.getX() + v * rd.getY();
+        Vector3 rd = lens_radius * random_in_unit_disk();
+        Vector3 offset = u * rd.X() + v * rd.Y();
 
         return ray(
                 origin + offset,
@@ -48,12 +48,12 @@ public:
     }
 
 private:
-    point3 origin;
-    point3 lower_left_corner;
-    vector3 u, v, w;
-    vector3 horizontal;
-    vector3 vertical;
+    Point3 origin;
+    Point3 lower_left_corner;
+    Vector3 u, v, w;
+    Vector3 horizontal;
+    Vector3 vertical;
     double lens_radius;
 };
 
-#endif //FIRSTRAYTRACER_CAMERA_HPP
+#endif //RTFOUNDATION_CAMERA_HPP

@@ -14,10 +14,10 @@ class lambertian : public material
 {
 public:
     // Constructor
-    lambertian(const color& a) : albedo(a) {}
+    lambertian(const Color& a) : albedo(a) {}
 
     virtual bool scatter(
-            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+            const ray& r_in, const hit_record& rec, Color& attenuation, ray& scattered
     ) const override
     {
         // randomly set where the scattered ray heads
@@ -40,7 +40,7 @@ public:
     /*
     * albedo - the factor that determines the portion of incident ray that the material reflects
     */
-    color albedo;
+    Color albedo;
 };
 
 #endif //FIRSTRAYTRACER_LAMBERTIAN_H

@@ -20,15 +20,15 @@ class material;
  */
 struct hit_record
 {
-    inline void set_face_normal(const ray& r, const vector3& outward_normal)
+    inline void set_face_normal(const ray& r, const Vector3& outward_normal)
     {
         // front face is set to be true, if the normal of the surface and incident ray are opposite
         front_face = dot_product(r.direction(), outward_normal) < 0;
         normal = front_face ? outward_normal : -outward_normal;
     }
 
-    point3 p;
-    vector3 normal;
+    Point3 p;
+    Vector3 normal;
     shared_ptr<material> mat_ptr;
     double t;
     bool front_face;

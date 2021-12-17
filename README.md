@@ -14,8 +14,8 @@ Features
 -------------
 
 This simple renderer contains fundamental features of modern physically based renderers such as
-- Abstract *vector3* class for holding  & manipulating data of points, colors (RGB), and (obviously) vectors
-- Freely movable & rotatable *camera* class whose vertical FOV, and DOF can be adjusted by user
+- Abstract *Vector3* class for holding  & manipulating data of points, colors (RGB), and (obviously) vectors
+- Freely movable & rotatable *Camera* class whose vertical FOV, and DOF can be adjusted by user
 - Frequently used materials: *Lambertian (Diffuse)*, *Metal*, and *Dielectric*
 - Utility functions that come in handy for various tasks (random number generation, converting units)
 - **A demo code which generates the beautiful image you saw on top of this document**
@@ -49,8 +49,8 @@ Project Structure
 under `src/cpu` directory there are:
 ```
 .
-├── camera.hpp              # camera class of FirstRayTracer
-├── color.hpp               # a function for writing RGB data to a file
+├── Camera.hpp              # Camera class of FirstRayTracer
+├── Color.hpp               # a function for writing RGB data to a file
 ├── dielectric.hpp          # Dielectric material class
 ├── hittable.hpp            # hittable class of FirstRayTracer
 ├── hittable_list.hpp       # class for managing multiple hittable objects in a scene
@@ -61,7 +61,7 @@ under `src/cpu` directory there are:
 ├── ray.hpp                 # ray class of FirstRayTracer
 ├── rtweekend.hpp           # a project header defining constants & utility functions
 ├── sphere.hpp              # sphere class which is a derived class of hittable
-└── vector3.hpp             # vector3 class which defines the fundamental ADT of this renderer
+└── Vector3.hpp             # Vector3 class which defines the fundamental ADT of this renderer
 ```
 
 and most of files under `src/gpu` are written based on the CPU implementation, thus structure and design principle are almost identical.

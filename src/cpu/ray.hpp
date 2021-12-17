@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include "vector3.hpp"
+#include "Vector3.hpp"
 
 class ray{
 public:
@@ -16,30 +16,30 @@ public:
     {
         // Do nothing
     }
-    ray(const point3& origin, const vector3& direction)
+    ray(const Point3& origin, const Vector3& direction)
             : orig(origin), dir(direction)
     {
         // Do nothing
     }
 
-    vector3 origin() const
+    Vector3 origin() const
     {
         return orig;
     }
 
-    vector3 direction() const
+    Vector3 direction() const
     {
         return dir;
     }
 
-    vector3 at(double t) const
+    Vector3 at(double t) const
     {
         return orig + t * dir;
     }
 
 public:
-    vector3 orig;
-    vector3 dir;
+    Vector3 orig;
+    Vector3 dir;
 };
 
 #endif //FIRSTRAYTRACER_RAY_HPP

@@ -14,14 +14,14 @@ class metal : public material
 {
 public:
     // Constructor
-    metal(const color& a, double f) : albedo(a), fuzz(f < 1 ? f: 1) {}
+    metal(const Color& a, double f) : albedo(a), fuzz(f < 1 ? f : 1) {}
 
     virtual bool scatter(
-            const ray& r_in, const hit_record& rec, color& attenuation, ray& scattered
+            const ray& r_in, const hit_record& rec, Color& attenuation, ray& scattered
     ) const override
     {
         // determine the direction of reflected ray
-        vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
+        Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
 
         /**
          * generate a ray object that originates from the point of incidence, and spreads out toward certain direction
@@ -38,7 +38,7 @@ public:
      * albedo - the factor that determines the portion of incident ray that the material reflects
      * fuzz (fuzziness) - the factor of not being clear, metal with higher fuzziness tends to act similar to diffuse
      */
-    color albedo;
+    Color albedo;
     double fuzz;
 };
 
