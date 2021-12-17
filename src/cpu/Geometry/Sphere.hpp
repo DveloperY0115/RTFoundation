@@ -6,7 +6,7 @@
 #define RTFOUNDATION_SPHERE_HPP
 
 #include "Hittable.hpp"
-#include "Vector3.hpp"
+#include "../Math/Vector3.hpp"
 
 /**
  * Sphere class which defines a Sphere object that can interact with rays in the scene

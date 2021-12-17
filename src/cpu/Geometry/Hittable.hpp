@@ -5,8 +5,8 @@
 #ifndef RTFOUNDATION_HITTABLE_HPP
 #define RTFOUNDATION_HITTABLE_HPP
 
-#include "rtweekend.hpp"
-#include "Ray.hpp"
+#include "../rtweekend.hpp"
+#include "../Rays/Ray.hpp"
 
 class Material;
 

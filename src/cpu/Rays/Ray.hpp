@@ -8,7 +8,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-#include "Vector3.hpp"
+#include "../Math/Vector3.hpp"
 
 class Ray{
 public:

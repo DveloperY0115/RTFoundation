@@ -88,7 +88,7 @@ inline double degreeToRadian(double degree)
 }
 
 // Common Headers
-#include "Ray.hpp"
-#include "Vector3.hpp"
+#include "Rays/Ray.hpp"
+#include "Math/Vector3.hpp"
 
 #endif //RTFOUNDATION_RTWEEKEND_HPP

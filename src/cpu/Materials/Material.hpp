@@ -6,8 +6,8 @@
 #define RTFOUNDATION_MATERIAL_HPP
 
 
-#include "Ray.hpp"
-#include "Hittable.hpp"
+#include "../Rays/Ray.hpp"
+#include "../Geometry/Hittable.hpp"
 
 /*
  * Generalized, abstract class for different materials

@@ -5,7 +5,7 @@
 #ifndef RTFOUNDATION_CAMERA_HPP
 #define RTFOUNDATION_CAMERA_HPP
 
-#include "rtweekend.hpp"
+#include "../rtweekend.hpp"
 
 class Camera
 {

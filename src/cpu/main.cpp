@@ -1,14 +1,16 @@
 #include <iostream>
 #include <time.h>
-#include "Camera.hpp"
+// #include <omp.h>
+
+#include "Cameras/Camera.hpp"
 #include "rtweekend.hpp"
-#include "HittableList.hpp"
-#include "Sphere.hpp"
-#include "color.hpp"
-#include "Material.hpp"
-#include "Lambertian.hpp"
-#include "Metal.hpp"
-#include "Dielectric.hpp"
+#include "Geometry/HittableList.hpp"
+#include "Geometry/Sphere.hpp"
+#include "Colors/Colors.hpp"
+#include "Materials/Material.hpp"
+#include "Materials/Lambertian.hpp"
+#include "Materials/Metal.hpp"
+#include "Materials/Dielectric.hpp"
 
 Color computeRayColor(const Ray& r, const Hittable& world, int depth)
 {
@@ -84,7 +86,6 @@ HittableList generateRandomScene() {
 int main()
 {
     // configure output image
-
     const auto AspectRatio = 16.0 / 9.0;
     const int ImageWidth = 400;
     const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
@@ -112,6 +113,9 @@ int main()
     start = clock();
     std::cout << "P3\n" << ImageWidth << " " << ImageHeight << "\n255\n";
 
+    // initialize image buffer
+    int ImageBuffer[3 * ImageWidth * ImageHeight];
+
     for (int j = ImageHeight - 1; j >= 0; --j)
     {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
@@ -125,7 +129,8 @@ int main()
                 Ray r = cam.getRay(u, v);
                 PixelColor += computeRayColor(r, world, MaxRecursion);
             }
-            writeColor(std::cout, PixelColor, SamplesPerPixel);
+            // writeColor(std::cout, PixelColor, SamplesPerPixel);
+            writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
         }
     }
     end = clock();
