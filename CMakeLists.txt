@@ -24,7 +24,7 @@ if(UNIX AND NOT APPLE)
     endif()
 endif()
 
-# if Windows, enable both C++, CUDA build toolchains
+# if Windows or Linux, enable both C++, CUDA build toolchains
 if (MSVC OR LINUX)
     find_package(CUDA)
     if (CUDA_FOUND)
