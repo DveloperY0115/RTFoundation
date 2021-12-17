@@ -10,29 +10,29 @@
 #include <iostream>
 #include "Vector3.hpp"
 
-class ray{
+class Ray{
 public:
-    ray()
+    Ray()
     {
         // Do nothing
     }
-    ray(const Point3& origin, const Vector3& direction)
+    Ray(const Point3& origin, const Vector3& direction)
             : orig(origin), dir(direction)
     {
         // Do nothing
     }
 
-    Vector3 origin() const
+    Vector3 getRayOrigin() const
     {
         return orig;
     }
 
-    Vector3 direction() const
+    Vector3 getRayDirection() const
     {
         return dir;
     }
 
-    Vector3 at(double t) const
+    Vector3 getPointAt(double t) const
     {
         return orig + t * dir;
     }

@@ -20,10 +20,10 @@ public:
         // Do nothing
     }
 
-    Vector3(double element_0, double element_1, double element_2) {
-        e[0] = element_0;
-        e[1] = element_1;
-        e[2] = element_2;
+    Vector3(double x, double y, double z) {
+        e[0] = x;
+        e[1] = y;
+        e[2] = z;
     }
 
     /*
@@ -47,12 +47,12 @@ public:
         return Vector3(-X(), -Y(), -Z());
     }
 
-    double operator[](int index) const {
-        return e[index];
+    double operator[](int Index) const {
+        return e[Index];
     }
 
-    double& operator[](int index) {
-        return e[index];
+    double& operator[](int Index) {
+        return e[Index];
     }
 
     /*
@@ -101,13 +101,13 @@ public:
      * Compute the Euclidean norm of the calling vector.
      */
     double length() const {
-        return sqrt(length_squared());
+        return sqrt(lengthSquared());
     }
 
     /*
      * Compute the squared sum of vector elements.
      */
-    double length_squared() const {
+    double lengthSquared() const {
         return e[0]*e[0] + e[1]*e[1] + e[2]*e[2];
     }
 
@@ -124,9 +124,9 @@ public:
      */
     inline static Vector3 random() {
         return Vector3(
-                random_double(),
-                random_double(),
-                random_double()
+                generateRandomDouble(),
+                generateRandomDouble(),
+                generateRandomDouble()
                 );
     }
 
@@ -135,16 +135,16 @@ public:
      */
     inline static Vector3 random(double min, double max) {
         return Vector3(
-                random_double(min, max),
-                random_double(min, max),
-                random_double(min, max)
+                generateRandomDouble(min, max),
+                generateRandomDouble(min, max),
+                generateRandomDouble(min, max)
                 );
     }
 
     /*
      * Check whether the given vector is close to zero vector
      */
-    bool near_zero() const {
+    bool nearZero() const {
         const auto s = 1e-8;
         return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
     }
@@ -205,7 +205,7 @@ private:
      * @param v a 'Vector3' instance
      * @return a duplicate of 'v' but normalized one
      */
-    Vector3 unit_vector(Vector3 v) {
+    Vector3 normalize(Vector3 v) {
         return v / v.length();
     }
 
@@ -215,7 +215,7 @@ private:
      * @param v2 a 'Vector3' instance
      * @return the inner product of two vectors
      */
-    double dot_product(const Vector3 &v1, const Vector3 &v2) {
+    double dotProduct(const Vector3 &v1, const Vector3 &v2) {
         return v1.X() * v2.X() + v1.Y() * v2.Y() + v1.Z() * v2.Z();
     }
 
@@ -225,53 +225,53 @@ private:
      * @param v2 a 'Vector3' instance
      * @return the cross product of two vectors
      */
-    Vector3 cross_product(const Vector3 &v1, const Vector3 &v2) {
+    Vector3 crossProduct(const Vector3 &v1, const Vector3 &v2) {
         return Vector3((v1.Y() * v2.Z() - v1.Z() * v2.Y()),
                        (-(v1.X() * v2.Z() - v1.Z() * v2.X())),
                        (v1.X() * v2.Y() - v1.Y() * v2.X()));
     }
 
     /**
-     * Calculate the reflection of 'v' which reflects off the surface characterized by normal 'n'
-     * @param v a 'Vector3' instance representing an incident ray
-     * @param n a 'Vector3' instance representing a normal vector of the surface on which 'v' is being reflected off
+     * Calculate the reflection of 'v' which reflects off the surface characterized by HitPointNormal 'n'
+     * @param v a 'Vector3' instance representing an incident Ray
+     * @param n a 'Vector3' instance representing a HitPointNormal vector of the surface on which 'v' is being reflected off
      * @return the reflection of 'v'
      */
     Vector3 reflect(const Vector3& v, const Vector3& n) {
-        return v - 2 * dot_product(v, n) * n;
+        return v - 2 * dotProduct(v, n) * n;
     }
 
     /**
-     * Calculate the refraction of 'v' which refracts at the surface characterized by normal 'n'
-     * @param v a 'Vector3' instance representing an incident ray
-     * @param n a 'Vector3' instance representing a normal vector of the surface on which 'v' is being refracted
+     * Calculate the refraction of 'v' which refracts getPointAt the surface characterized by HitPointNormal 'n'
+     * @param v a 'Vector3' instance representing an incident Ray
+     * @param n a 'Vector3' instance representing a HitPointNormal vector of the surface on which 'v' is being refracted
      * @param etai_over_etat a real valued, ratio of refractive indices of two adjacent matters
      * @return the refraction of 'v'
      */
     Vector3 refract(const Vector3& v, const Vector3& n, double etai_over_etat) {
-        auto cos_theta = fmin(dot_product(-v, n), 1.0);
+        auto cos_theta = fmin(dotProduct(-v, n), 1.0);
         Vector3 refracted_perp = etai_over_etat * (v + cos_theta * n);
-        Vector3 refracted_parallel = -sqrt(fabs(1.0 - refracted_perp.length_squared())) * n;
+        Vector3 refracted_parallel = -sqrt(fabs(1.0 - refracted_perp.lengthSquared())) * n;
         Vector3 refracted = refracted_perp + refracted_parallel;
         return refracted;
     }
 
-    Vector3 random_unit_vector() {
-        auto a = random_double(0, 2*pi);
-        auto z = random_double(-1, 1);
+    Vector3 randomUnitVector() {
+        auto a = generateRandomDouble(0, 2 * Pi);
+        auto z = generateRandomDouble(-1, 1);
         auto r = sqrt(1-z*z);
         return Vector3(r * cos(a), r * sin(a), z);
     }
 
     /**
-     * Generate an unit vector which points an arbitrary point on the surface of unit sphere
-     * @return a normalized 'Vector3' instance that points a random point on a unit sphere
+     * Generate an unit vector which points an arbitrary point on the surface of unit Sphere
+     * @return a normalized 'Vector3' instance that points a random point on a unit Sphere
      */
-    Vector3 random_in_unit_sphere() {
+    Vector3 randomInUnitSphere() {
         while (true) {
             auto p = Vector3::random(-1, 1);
-            if (p.length_squared() >= 1) continue;
-            return unit_vector(p);
+            if (p.lengthSquared() >= 1) continue;
+            return normalize(p);
         }
     }
 
@@ -279,32 +279,32 @@ private:
      * Generates an unit vector which points an arbitrary point of the unit disk
      * @return a normalized 'Vector3' instance that points a random point on a unit disk
      */
-    Vector3 random_in_unit_disk() {
+    Vector3 randomInUnitDisk() {
         while (true) {
-            auto p = Vector3(random_double(-1, 1), random_double(-1, 1), 0.0);
-            if (p.length_squared() >= 1) continue;
-            return unit_vector(p);
+            auto p = Vector3(generateRandomDouble(-1, 1), generateRandomDouble(-1, 1), 0.0);
+            if (p.lengthSquared() >= 1) continue;
+            return normalize(p);
         }
     }
 
     /**
-     * Generate an unit vector which points an arbitrary point on the surface of hemisphere specified by normal
+     * Generate an unit vector which points an arbitrary point on the surface of hemisphere specified by HitPointNormal
      *
-     * This function is used to generate a random ray scattered on the surface of diffuse material.
+     * This function is used to generate a random Ray scattered on the surface of diffuse Material.
      *
-     * By forcing a ray to be emitted through a hemisphere in the direction of normal vector,
+     * By forcing a Ray to be emitted through a hemisphere in the getRayDirection of HitPointNormal vector,
      * one can be ensured that the object will behave more realistically under direct light source, since all
      * the rays are now spreads out uniformly to the open space.
-     * @param normal a normal vector that points the center of unit sphere tangent to the surface specified by itself
+     * @param NormalVector a HitPointNormal vector that points the center of unit Sphere tangent to the surface specified by itself
      * @return a randomly generated vector which points an arbitrary point on the hemisphere
      */
-    Vector3 random_in_hemisphere(const Vector3& normal) {
-        Vector3 in_unit_sphere = random_in_unit_sphere();
-        if (dot_product(in_unit_sphere, normal) > 0.0)
-            // ray vector points outward
+    Vector3 randomInHemisphere(const Vector3& NormalVector) {
+        Vector3 in_unit_sphere = randomInUnitSphere();
+        if (dotProduct(in_unit_sphere, NormalVector) > 0.0)
+            // Ray vector points outward
             return in_unit_sphere;
         else
-            // ray vector points inward
+            // Ray vector points inward
             return -in_unit_sphere;
 
     }

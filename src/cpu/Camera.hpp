@@ -11,49 +11,49 @@ class Camera
 {
 public:
     Camera(
-            Point3 lookfrom,
-            Point3 lookat,
-            Vector3 vup,
-            double vfov, // vertical field-of-view in degrees
-            double aspect_ratio,
-            double aperture,
-            double focus_dist
+            Point3 LookFrom,
+            Point3 LookAt,
+            Vector3 UpVector,
+            double VerticalFOV, // Vertical field-of-view in degrees
+            double AspectRatio,
+            double Aperture,
+            double FocusingDistance
             ) {
-            auto theta = degress_to_radians(vfov);
+            auto theta = degreeToRadian(VerticalFOV);
             auto h = tan(theta/2);
             auto viewport_height = 2.0 * h;
-            auto viewport_width = aspect_ratio * viewport_height;
+            auto viewport_width = AspectRatio * viewport_height;
 
-            w = unit_vector(lookfrom - lookat);
-            u = unit_vector(cross_product(vup, w));
-            v = cross_product(w, u);
+            w = normalize(LookFrom - LookAt);
+            u = normalize(crossProduct(UpVector, w));
+            v = crossProduct(w, u);
 
-            origin = lookfrom;
-            horizontal = focus_dist * viewport_width * u;
-            vertical = focus_dist * viewport_height * v;
-            lower_left_corner = origin - horizontal/2 - vertical/2 - focus_dist * w;
+        Origin = LookFrom;
+        Horizontal = FocusingDistance * viewport_width * u;
+        Vertical = FocusingDistance * viewport_height * v;
+        lowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - FocusingDistance * w;
 
-            lens_radius = aperture / 2;
+        LensRadius = Aperture / 2;
     }
 
-    ray get_ray(double s, double t) const
+    Ray getRay(double s, double t) const
     {
-        Vector3 rd = lens_radius * random_in_unit_disk();
+        Vector3 rd = LensRadius * randomInUnitDisk();
         Vector3 offset = u * rd.X() + v * rd.Y();
 
-        return ray(
-                origin + offset,
-                lower_left_corner + s * horizontal + t * vertical - origin - offset
+        return Ray(
+                Origin + offset,
+                lowerLeftCorner + s * Horizontal + t * Vertical - Origin - offset
                 );
     }
 
 private:
-    Point3 origin;
-    Point3 lower_left_corner;
+    Point3 Origin;
+    Point3 lowerLeftCorner;
     Vector3 u, v, w;
-    Vector3 horizontal;
-    Vector3 vertical;
-    double lens_radius;
+    Vector3 Horizontal;
+    Vector3 Vertical;
+    double LensRadius;
 };
 
 #endif //RTFOUNDATION_CAMERA_HPP
