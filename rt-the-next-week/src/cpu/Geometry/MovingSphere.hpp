@@ -26,7 +26,7 @@ public:
         // Do nothing
     };
 
-    virtual bool Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const override;
+    bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const override;
 
     Point3 CenterPositionAt(double Time) const;
 
@@ -41,7 +41,7 @@ Point3 MovingSphere::CenterPositionAt(double Time) const {
     return CenterStart + ((Time - MovementStartTime) / (MovementEndTime - MovementStartTime)) * (CenterEnd - CenterStart);
 }
 
-bool MovingSphere::Hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const {
+bool MovingSphere::hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const {
     Vector3 oc = Ray.getRayOrigin() - CenterPositionAt(Ray.getCreatedTime());
     auto a = Ray.getRayDirection().lengthSquared();
     auto half_b = dotProduct(oc, Ray.getRayDirection());
@@ -49,7 +49,7 @@ bool MovingSphere::Hit(const Ray &Ray, double DepthMin, double DepthMax, HitReco
 
     auto discriminant = half_b * half_b - a*c;
 
-    // Sphere is Hit by the Ray if and only if the equation has real solutions
+    // Sphere is hit by the Ray if and only if the equation has real solutions
     if (discriminant > 0)
     {
         // Solve for the solution that contains the actual parameter to get the point.
@@ -60,7 +60,7 @@ bool MovingSphere::Hit(const Ray &Ray, double DepthMin, double DepthMax, HitReco
         if (temp < DepthMax && temp > DepthMin)
         {
             Record.Depth = temp;
-            // the point of the surface that was Hit by the Ray
+            // the point of the surface that was hit by the Ray
             Record.HitPoint = Ray.getPointAt(Record.Depth);
             // here, we define a HitPointNormal vector to point outward
             Vector3 OutwardNormal = (Record.HitPoint - CenterPositionAt(Ray.getCreatedTime())) / Radius;

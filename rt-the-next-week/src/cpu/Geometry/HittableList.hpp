@@ -38,16 +38,16 @@ public:
     void add(shared_ptr<Hittable> object) { objects.push_back(object); }
 
     /*
-     * The member function Hit, which is expected to be implemented in a derived class
+     * The member function hit, which is expected to be implemented in a derived class
      */
-    virtual bool Hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const override;
+    virtual bool hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const override;
 
 public:
     // dynamic array that stores shard_ptr of <Hittable> objects
     std::vector<shared_ptr<Hittable>> objects;
 };
 
-bool HittableList::Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const
+bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const
 {
     HitRecord TempRecord;
     bool HitSomething = false;
@@ -56,7 +56,7 @@ bool HittableList::Hit(const Ray& Ray, double DepthMin, double DepthMax, HitReco
     // TODO: Optimize this using BVH, kd-Tree, etc
     for (const auto& object : objects)
     {
-        if (object->Hit(Ray, DepthMin, ClosestDepth, TempRecord))
+        if (object->hit(Ray, DepthMin, ClosestDepth, TempRecord))
         {
             HitSomething = true;
             ClosestDepth = TempRecord.Depth;

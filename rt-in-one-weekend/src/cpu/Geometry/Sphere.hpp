@@ -16,15 +16,15 @@ class Sphere: public Hittable
 public:
     Sphere() {}
     Sphere(Point3 cen, double r, shared_ptr<Material> m)
-    : center(cen), radius(r), mat_ptr(m) {};
+    : Center(cen), Radius(r), MaterialPtr(m) {};
 
-    virtual bool Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const;
+    virtual bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const;
 
     // member variables of 'Sphere'
 public:
-    Vector3 center;
-    double radius;
-    shared_ptr<Material> mat_ptr;
+    Vector3 Center;
+    double Radius;
+    shared_ptr<Material> MaterialPtr;
 };
 
 /**
@@ -35,16 +35,16 @@ public:
  * @param Record a structure to store information of the intersection (if it's turned out to be meaningful)
  * @return true if Ray intersects with the surface, false otherwise
  */
-bool Sphere::Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const
+bool Sphere::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const
 {
-    Vector3 oc = Ray.getRayOrigin() - center;
+    Vector3 oc = Ray.getRayOrigin() - Center;
     auto a = Ray.getRayDirection().lengthSquared();
     auto half_b = dotProduct(oc, Ray.getRayDirection());
-    auto c = oc.lengthSquared() - radius * radius;
+    auto c = oc.lengthSquared() - Radius * Radius;
 
     auto discriminant = half_b * half_b - a*c;
 
-    // Sphere is Hit by the Ray if and only if the equation has real solutions
+    // Sphere is hit by the Ray if and only if the equation has real solutions
     if (discriminant > 0)
     {
         // Solve for the solution that contains the actual parameter to get the point.
@@ -55,14 +55,14 @@ bool Sphere::Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
         if (temp < DepthMax && temp > DepthMin)
         {
             Record.Depth = temp;
-            // the point of the surface that was Hit by the Ray
+            // the point of the surface that was hit by the Ray
             Record.HitPoint = Ray.getPointAt(Record.Depth);
             // here, we define a HitPointNormal vector to point outward
-            Vector3 outward_normal = (Record.HitPoint - center) / radius;
+            Vector3 outward_normal = (Record.HitPoint - Center) / Radius;
             // compare the getRayDirection of the Ray & outward_normal
             // set the HitPointNormal, opposite to the getRayDirection where light came from
             Record.setFaceNormal(Ray, outward_normal);
-            Record.MaterialPtr = mat_ptr;
+            Record.MaterialPtr = MaterialPtr;
             return true;
         }
 
@@ -73,9 +73,9 @@ bool Sphere::Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
         {
             Record.Depth = temp;
             Record.HitPoint = Ray.getPointAt(Record.Depth);
-            Vector3 outward_normal = (Record.HitPoint - center) / radius;
+            Vector3 outward_normal = (Record.HitPoint - Center) / Radius;
             Record.setFaceNormal(Ray, outward_normal);
-            Record.MaterialPtr = mat_ptr;
+            Record.MaterialPtr = MaterialPtr;
             return true;
         }
     }

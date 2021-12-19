@@ -13,7 +13,7 @@ class Material;
 /*
  * The structure HitRecord stores:
  * i) The coordinate of hit-point
- * ii) The HitPointNormal vector of geometry getPointAt the Hit-point
+ * ii) The HitPointNormal vector of geometry getPointAt the hit-point
  * iii) Material data of that point(or surface)
  * iv) Solution that gives the parameter to that point from the getRayOrigin
  * v) The boolean function that determines the relative getRayDirection of Ray and HitPointNormal
@@ -40,7 +40,7 @@ class Hittable
 {
 public:
     // virtual : the member function that is expected to be re-define in a derived class
-    virtual bool Hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const = 0;
+    virtual bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const = 0;
 };
 
 #endif //RTFOUNDATION_HITTABLE_HPP

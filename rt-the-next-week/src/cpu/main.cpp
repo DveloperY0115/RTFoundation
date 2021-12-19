@@ -19,7 +19,7 @@ Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
     if (Depth <= 0)
             return Color(0, 0, 0);
 
-    if (World.Hit(r, 0.001, Infinity, Record)) {
+    if (World.hit(r, 0.001, Infinity, Record)) {
         Ray ScatteredRay;
         Color Attenuation;
         if (Record.MaterialPtr->scatter(r, Record, Attenuation, ScatteredRay))
@@ -29,7 +29,7 @@ Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
         return Color(0, 0, 0);
     }
 
-    // if the Ray didn'Depth Hit any object, set the pixel color as background
+    // if the Ray didn'Depth hit any object, set the pixel color as background
     Vector3 UnitDirection = normalize(r.getRayDirection());
     auto t = 0.5*(UnitDirection.Y() + 1.0);
     return (1.0 - t) * Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);
