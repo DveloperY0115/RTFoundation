@@ -17,23 +17,30 @@ public:
             double VerticalFOV, // Vertical field-of-view in degrees
             double AspectRatio,
             double Aperture,
-            double FocusingDistance
+            double FocusingDistance,
+            double ShutterOpenAt = 0,
+            double ShutterCloseAt = 0
             ) {
-            auto theta = degreeToRadian(VerticalFOV);
-            auto h = tan(theta/2);
-            auto viewport_height = 2.0 * h;
-            auto viewport_width = AspectRatio * viewport_height;
+            auto FOVTheta = degreeToRadian(VerticalFOV);
+            auto h = tan(FOVTheta / 2);
+            auto ViewportHeight = 2.0 * h;
+            auto ViewportWidth = AspectRatio * ViewportHeight;
 
+            // Set camera coordinate system
             w = normalize(LookFrom - LookAt);
             u = normalize(crossProduct(UpVector, w));
             v = crossProduct(w, u);
 
-        Origin = LookFrom;
-        Horizontal = FocusingDistance * viewport_width * u;
-        Vertical = FocusingDistance * viewport_height * v;
-        lowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - FocusingDistance * w;
+            Origin = LookFrom;
+            Horizontal = FocusingDistance * ViewportWidth * u;
+            Vertical = FocusingDistance * ViewportHeight * v;
+            lowerLeftCorner = Origin - Horizontal / 2 - Vertical / 2 - FocusingDistance * w;
 
-        LensRadius = Aperture / 2;
+            LensRadius = Aperture / 2;
+
+            // Set shutter time(s)
+            ShutterOpenTime = ShutterOpenAt;
+            ShutterCloseTime = ShutterCloseAt;
     }
 
     Ray getRay(double s, double t) const
@@ -43,7 +50,8 @@ public:
 
         return Ray(
                 Origin + offset,
-                lowerLeftCorner + s * Horizontal + t * Vertical - Origin - offset
+                lowerLeftCorner + s * Horizontal + t * Vertical - Origin - offset,
+                generateRandomDouble(ShutterOpenTime, ShutterCloseTime)
                 );
     }
 
@@ -54,6 +62,8 @@ private:
     Vector3 Horizontal;
     Vector3 Vertical;
     double LensRadius;
+    double ShutterOpenTime;
+    double ShutterCloseTime;
 };
 
 #endif //RTFOUNDATION_CAMERA_HPP
