@@ -36,8 +36,9 @@ public:
     AABB BVHNodeBoundingBox;
 };
 
-BVHNode::BVHNode(const std::vector<shared_ptr<Hittable>> &SourceObjects, size_t StartIndex, size_t EndIndex, double t0,
-                 double t1) {
+BVHNode::BVHNode(const std::vector<shared_ptr<Hittable>> &SourceObjects,
+                 size_t StartIndex, size_t EndIndex,
+                 double t0, double t1) {
     auto Objects = SourceObjects;
 
     // Select a random axis to split the BVHs into two subtrees

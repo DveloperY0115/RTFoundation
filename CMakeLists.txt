@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
-project(ray-tracing-in-cpp CXX)
+project(RTFOUNDATION CXX)
 
 set(CMAKE_CXX_STANDARD 14)
 
