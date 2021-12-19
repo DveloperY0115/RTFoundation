@@ -6,6 +6,7 @@
 #include "rtweekend.hpp"
 #include "Geometry/HittableList.hpp"
 #include "Geometry/Sphere.hpp"
+#include "Geometry/MovingSphere.hpp"
 #include "Colors/Colors.hpp"
 #include "Materials/Material.hpp"
 #include "Materials/Lambertian.hpp"
@@ -52,7 +53,8 @@ HittableList generateRandomScene() {
                     // diffuse
                     auto albedo = Color::random() * Color::random();
                     sphere_material = make_shared<Lambertian>(albedo);
-                    world.add(make_shared<Sphere>(center, 0.2, sphere_material));
+                    auto center2 = center + Vector3(0, generateRandomDouble(0,.5), 0);
+                    world.add(make_shared<MovingSphere>(center, center2, 0.0, 1.0, 0.2, sphere_material));
                 } else if (MaterialSelector < 0.95) {
                     // Metal
                     auto albedo = Color::random(0.5, 1);
@@ -102,7 +104,14 @@ int main() {
     auto DistanceToFocus = 10.0;
     auto Aperture = 0.1;
 
-    Camera cam = Camera(LookFrom, LookAt, UpVector, 20, AspectRatio, Aperture, DistanceToFocus);
+    Camera cam = Camera(LookFrom,
+                        LookAt,
+                        UpVector,
+                        20,
+                        AspectRatio,
+                        Aperture,
+                        DistanceToFocus,
+                        0.0, 1.0);
 
     // render
     double start, end;
