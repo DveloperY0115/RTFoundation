@@ -34,7 +34,7 @@ Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
     return (1.0 - t) * Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);
 }
 
-HittableList generateRandomScene() {
+HittableList generateRandomSceneMotionBlur() {
     HittableList world;
 
     auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
@@ -93,7 +93,7 @@ int main() {
     const int MaxRecursion = 25;
 
     // set world
-    HittableList world = generateRandomScene();
+    HittableList world = generateRandomSceneMotionBlur();
 
     // set Camera
     Point3 LookFrom(13, 2, 3);

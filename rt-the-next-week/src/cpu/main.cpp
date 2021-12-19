@@ -7,6 +7,7 @@
 #include "Geometry/HittableList.hpp"
 #include "Geometry/Sphere.hpp"
 #include "Geometry/MovingSphere.hpp"
+#include "Geometry/BVH.hpp"
 #include "Colors/Colors.hpp"
 #include "Materials/Material.hpp"
 #include "Materials/Lambertian.hpp"
@@ -39,6 +40,56 @@ Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
 }
 
 HittableList generateRandomScene() {
+    HittableList World;
+
+    auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+    World.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, GroundMaterial));
+
+    // auto checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+    // World.add(make_shared<Sphere>(Point3(0,-1000,0), 1000, make_shared<Lambertian>(checker)));
+
+    for (int a = -11; a < 11; a++) {
+        for (int b = -11; b < 11; b++) {
+            auto MaterialSelector = generateRandomDouble();
+            Point3 center(a + 0.9 * generateRandomDouble(), 0.2, b + 0.9 * generateRandomDouble());
+
+            if ((center - Point3(4, 0.2, 0)).length() > 0.9) {
+                shared_ptr<Material> sphere_material;
+
+                if (MaterialSelector < 0.8) {
+                    // diffuse
+                    auto albedo = Color::random() * Color::random();
+                    sphere_material = make_shared<Lambertian>(albedo);
+                    auto center2 = center + Vector3(0, generateRandomDouble(0,.5), 0);
+                    World.add(make_shared<Sphere>(center, 0.2, sphere_material));
+                } else if (MaterialSelector < 0.95) {
+                    // Metal
+                    auto albedo = Color::random(0.5, 1);
+                    auto fuzz = generateRandomDouble(0, 0.5);
+                    sphere_material = make_shared<Metal>(albedo, fuzz);
+                    World.add(make_shared<Sphere>(center, 0.2, sphere_material));
+                } else {
+                    // glass
+                    sphere_material = make_shared<Dielectric>(1.5);
+                    World.add(make_shared<Sphere>(center, 0.2, sphere_material));
+                }
+            }
+        }
+    }
+
+    auto material1 = make_shared<Dielectric>(1.5);
+    World.add(make_shared<Sphere>(Point3(0, 1, 0), 1.0, material1));
+
+    auto material2 = make_shared<Lambertian>(Color(0.4, 0.2, 0.1));
+    World.add(make_shared<Sphere>(Point3(-4, 1, 0), 1.0, material2));
+
+    auto material3 = make_shared<Metal>(Color(0.7, 0.6, 0.5), 0.0);
+    World.add(make_shared<Sphere>(Point3(4, 1, 0), 1.0, material3));
+
+    return World;
+}
+
+HittableList generateRandomSceneMotionBlur() {
     HittableList world;
 
     // auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
@@ -127,11 +178,19 @@ int main() {
 
     // set world
     HittableList World;
-    int SceneSelector = 3;
+    int SceneSelector = 0;
 
-    switch(SceneSelector) {
-        case 1:
+    switch (SceneSelector) {
+        case 0:
             World = generateRandomScene();
+            LookFrom = Point3(13, 2, 3);
+            LookAt = Point3(0, 0, 0);
+            VerticalFOV = 20.0;
+            Aperture = 0.1;
+            break;
+
+        case 1:
+            World = generateRandomSceneMotionBlur();
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
