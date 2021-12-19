@@ -14,6 +14,7 @@
 #include "Materials/Dielectric.hpp"
 #include "Textures/SolidColor.hpp"
 #include "Textures/CheckerTexture.hpp"
+#include "Textures/ImageTexture.hpp"
 
 Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
     HitRecord Record;
@@ -98,6 +99,14 @@ HittableList generateTwoSpheres() {
     return Objects;
 }
 
+HittableList generateEarth() {
+    auto EarthTexture = make_shared<ImageTexture>("../../../../data/earthmap.jpeg");
+    auto EarthSurface = make_shared<Lambertian>(EarthTexture);
+    auto Globe = make_shared<Sphere>(Point3(0,0,0), 2,EarthSurface);
+
+    return HittableList(Globe);
+}
+
 int main() {
     // configure OpenMP
     omp_set_num_threads(8);
@@ -118,7 +127,7 @@ int main() {
 
     // set world
     HittableList World;
-    int SceneSelector = 0;
+    int SceneSelector = 3;
 
     switch(SceneSelector) {
         case 1:
@@ -129,9 +138,15 @@ int main() {
             Aperture = 0.1;
             break;
 
-        default:
         case 2:
             World = generateTwoSpheres();
+            LookFrom = Point3(13, 2, 3);
+            LookAt = Point3(0, 0, 0);
+            VerticalFOV = 20.0;
+            break;
+
+        case 3:
+            World = generateEarth();
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
