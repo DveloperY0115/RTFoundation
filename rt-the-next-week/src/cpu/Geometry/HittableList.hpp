@@ -5,10 +5,11 @@
 #ifndef RTFOUNDATION_HITTABLE_LIST_HPP
 #define RTFOUNDATION_HITTABLE_LIST_HPP
 
-#include "Hittable.hpp"
-
 #include <memory>
 #include <vector>
+
+#include "AABB.hpp"
+#include "Hittable.hpp"
 
 using std::shared_ptr;
 using std::make_shared;
@@ -40,7 +41,8 @@ public:
     /*
      * The member function hit, which is expected to be implemented in a derived class
      */
-    virtual bool hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const override;
+    bool hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const override;
+    bool computeBoundingBox(double t0, double t1, AABB& OutputBoundingBox) const override;
 
 public:
     // dynamic array that stores shard_ptr of <Hittable> objects
@@ -53,7 +55,6 @@ bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitReco
     bool HitSomething = false;
     auto ClosestDepth = DepthMax;
 
-    // TODO: Optimize this using BVH, kd-Tree, etc
     for (const auto& object : objects)
     {
         if (object->hit(Ray, DepthMin, ClosestDepth, TempRecord))
@@ -65,6 +66,23 @@ bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitReco
     }
 
     return HitSomething;
+}
+
+bool HittableList::computeBoundingBox(double t0, double t1, AABB &OutputBoundingBox) const {
+    if (objects.empty())
+        return false;
+
+    AABB tempBoundingBox;
+    bool isFirstBox = true;
+
+    for (const auto& object : objects) {
+        if (!object->computeBoundingBox(t0, t1, tempBoundingBox))
+            return false;
+        OutputBoundingBox = isFirstBox ? tempBoundingBox : computeSurroundingBox(OutputBoundingBox, tempBoundingBox);
+        isFirstBox = false;
+    }
+
+    return true;
 }
 
 #endif //RTFOUNDATION_HITTABLE_LIST_HPP

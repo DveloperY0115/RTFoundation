@@ -89,7 +89,7 @@ bool MovingSphere::hit(const Ray &Ray, double DepthMin, double DepthMax, HitReco
     return false;
 }
 
-bool MovingSphere::computeBoundingBox(double t0, double t1, AABB &OutputBoundingBox) const {
+bool MovingSphere::computeBoundingBox(double t0, double t1, AABB& OutputBoundingBox) const {
     AABB BoundingBoxAtStartPosition = AABB(
             CenterPositionAt(t0) - Vector3(Radius, Radius, Radius),
             CenterPositionAt(t0) + Vector3(Radius, Radius, Radius)
