@@ -27,7 +27,7 @@ public:
          * generate a Ray object that originates from the point of incidence, and spreads out toward certain getRayDirection
          * the getRayDirection might be randomized according to the fuzziness of this Material
          */
-        ScatteredRay = Ray(Record.HitPoint, ReflectedRayDir + Fuzziness * randomInUnitSphere());
+        ScatteredRay = Ray(Record.HitPoint, ReflectedRayDir + Fuzziness * randomInUnitSphere(), IncidentRay.getCreatedTime());
         Attenuation = Albedo;
         // if fuzziness is too high, the light may not be ReflectedRayDir off the surface (rather, it seems to be absorbed)
         return (dotProduct(ScatteredRay.getRayDirection(), Record.HitPointNormal) > 0);

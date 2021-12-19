@@ -31,7 +31,7 @@ public:
          * create actual 'Ray' instance and assign its reference to 'ScatteredRay',
          * also assign Albedo value to 'Attenuation'
          */
-        ScatteredRay = Ray(Record.HitPoint, ScatterDirection);
+        ScatteredRay = Ray(Record.HitPoint, ScatterDirection, IncidentRay.getCreatedTime());
         Attenuation = Albedo;
         return true;
     }

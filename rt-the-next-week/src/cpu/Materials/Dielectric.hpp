@@ -33,7 +33,7 @@ public:
             refractedDirection = refract(incidentDirection, Record.HitPointNormal, RefractionRatio);
         }
 
-        ScatteredRay = Ray(Record.HitPoint, refractedDirection);
+        ScatteredRay = Ray(Record.HitPoint, refractedDirection, IncidentRay.getCreatedTime());
         return true;
     }
 
