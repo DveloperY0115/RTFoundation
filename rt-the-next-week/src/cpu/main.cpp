@@ -113,8 +113,8 @@ int main() {
     Point3 LookFrom;
     Point3 LookAt;
     Vector3 UpVector;
-    double VerticalFOV;
-    double Aperture;
+    double VerticalFOV = 40.0;
+    double Aperture = 0.0;
 
     // set world
     HittableList World;
@@ -125,7 +125,7 @@ int main() {
             World = generateRandomScene();
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
-            VerticalFOV = 40.0;
+            VerticalFOV = 20.0;
             Aperture = 0.1;
             break;
 
