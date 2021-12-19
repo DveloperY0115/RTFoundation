@@ -6,7 +6,7 @@
 #define RTFOUNDATION_MOVINGSPHERE_HPP
 
 #include "../rtweekend.hpp"
-
+#include "AABB.hpp"
 #include "Hittable.hpp"
 
 class MovingSphere : public Hittable {
@@ -27,6 +27,7 @@ public:
     };
 
     bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const override;
+    bool computeBoundingBox(double t0, double t1, AABB &OutputBoundingBox) const override;
 
     Point3 CenterPositionAt(double Time) const;
 
@@ -86,6 +87,18 @@ bool MovingSphere::hit(const Ray &Ray, double DepthMin, double DepthMax, HitReco
     }
 
     return false;
+}
+
+bool MovingSphere::computeBoundingBox(double t0, double t1, AABB &OutputBoundingBox) const {
+    AABB BoundingBoxAtStartPosition = AABB(
+            CenterPositionAt(t0) - Vector3(Radius, Radius, Radius),
+            CenterPositionAt(t0) + Vector3(Radius, Radius, Radius)
+            );
+    AABB BoundingBoxAtEndPosition = AABB(
+            CenterPositionAt(t1) - Vector3(Radius, Radius, Radius),
+            CenterPositionAt(t1) + Vector3(Radius, Radius, Radius)
+            );
+    return true;
 }
 
 #endif //RTFOUNDATION_MOVINGSPHERE_HPP

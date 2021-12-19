@@ -6,6 +6,7 @@
 #define RTFOUNDATION_HITTABLE_HPP
 
 #include "../rtweekend.hpp"
+#include "AABB.hpp"
 #include "../Rays/Ray.hpp"
 
 class Material;
@@ -39,6 +40,7 @@ class Hittable
 public:
     // virtual : the member function that is expected to be re-define in a derived class
     virtual bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const = 0;
+    virtual bool computeBoundingBox(double t0, double t1, AABB& OutputBoundingBox) const = 0;
 };
 
 #endif //RTFOUNDATION_HITTABLE_HPP

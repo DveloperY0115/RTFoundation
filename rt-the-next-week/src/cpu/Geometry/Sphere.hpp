@@ -19,6 +19,7 @@ public:
     : Center(Center), Radius(Radius), MaterialPtr(MaterialPtr) {};
 
     bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const override;
+    bool computeBoundingBox(double MovementStartTime, double MovementEndTime, AABB &OutputBoundingBox) const override;
 
 public:
     Vector3 Center;
@@ -76,6 +77,14 @@ bool Sphere::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
     }
 
     return false;
+}
+
+bool Sphere::computeBoundingBox(double MovementStartTime, double MovementEndTime, AABB &OutputBoundingBox) const {
+    OutputBoundingBox = AABB(
+            Center - Vector3(Radius, Radius, Radius),
+            Center + Vector3(Radius, Radius, Radius)
+            );
+    return true;
 }
 
 #endif //RTFOUNDATION_SPHERE_HPP
