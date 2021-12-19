@@ -87,6 +87,16 @@ HittableList generateRandomScene() {
     return world;
 }
 
+HittableList generateTwoSpheres() {
+    HittableList Objects;
+
+    auto Checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+
+    Objects.add(make_shared<Sphere>(Point3(0,-10, 0), 10, make_shared<Lambertian>(Checker)));
+    Objects.add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(Checker)));
+
+    return Objects;
+}
 
 int main() {
     // configure OpenMP
@@ -99,20 +109,42 @@ int main() {
     const int SamplesPerPixel = 100;
     const int MaxRecursion = 8;
 
-    // set world
-    HittableList world = generateRandomScene();
-
     // set Camera
-    Point3 LookFrom(13, 2, 3);
-    Point3 LookAt(0, 0, 0);
-    Vector3 UpVector(0, 1, 0);
+    Point3 LookFrom;
+    Point3 LookAt;
+    Vector3 UpVector;
+    double VerticalFOV;
+    double Aperture;
+
+    // set world
+    HittableList World;
+    int SceneSelector = 0;
+
+    switch(SceneSelector) {
+        case 1:
+            World = generateRandomScene();
+            LookFrom = Point3(13, 2, 3);
+            LookAt = Point3(0, 0, 0);
+            VerticalFOV = 40.0;
+            Aperture = 0.1;
+            break;
+
+        default:
+        case 2:
+            World = generateTwoSpheres();
+            LookFrom = Point3(13, 2, 3);
+            LookAt = Point3(0, 0, 0);
+            VerticalFOV = 20.0;
+            break;
+    }
+
+    UpVector = Vector3(0, 1, 0);
     auto DistanceToFocus = 10.0;
-    auto Aperture = 0.1;
 
     Camera cam = Camera(LookFrom,
                         LookAt,
                         UpVector,
-                        20,
+                        VerticalFOV,
                         AspectRatio,
                         Aperture,
                         DistanceToFocus,
@@ -127,7 +159,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, world, ImageBuffer)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, ImageBuffer)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
@@ -137,7 +169,7 @@ int main() {
                     auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
                     auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
                     Ray r = cam.getRay(u, v);
-                    PixelColor += computeRayColor(r, world, MaxRecursion);
+                    PixelColor += computeRayColor(r, World, MaxRecursion);
                 }
                 writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
             }
