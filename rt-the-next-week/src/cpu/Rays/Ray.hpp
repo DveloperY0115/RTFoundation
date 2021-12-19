@@ -16,30 +16,33 @@ public:
     {
         // Do nothing
     }
-    Ray(const Point3& origin, const Vector3& direction)
-            : orig(origin), dir(direction)
+    Ray(const Point3& RayOrigin, const Vector3& RayDirection, double CreatedTime = 0.0)
+            : Origin(RayOrigin), Direction(RayDirection), Time(CreatedTime)
     {
         // Do nothing
     }
 
-    Vector3 getRayOrigin() const
-    {
-        return orig;
+    Vector3 getRayOrigin() const {
+        return Origin;
     }
 
-    Vector3 getRayDirection() const
-    {
-        return dir;
+    Vector3 getRayDirection() const {
+        return Direction;
+    }
+
+    double getCreatedTime() const {
+        return Time;
     }
 
     Vector3 getPointAt(double t) const
     {
-        return orig + t * dir;
+        return Origin + t * Direction;
     }
 
 public:
-    Vector3 orig;
-    Vector3 dir;
+    Vector3 Origin;
+    Vector3 Direction;
+    double Time;
 };
 
 #endif //RTFOUNDATION_RAY_HPP
