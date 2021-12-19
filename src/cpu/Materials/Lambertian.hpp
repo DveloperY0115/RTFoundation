@@ -16,14 +16,14 @@ public:
     // Constructor
     Lambertian(const Color& a) : Albedo(a) {}
 
-    virtual bool Scatter(
+    virtual bool scatter(
             const Ray& IncidentRay, const HitRecord& Record, Color& Attenuation, Ray& ScatteredRay
     ) const override
     {
         // randomly set where the ScatteredRay Ray heads
         auto ScatterDirection = Record.HitPointNormal + randomInUnitSphere();
 
-        // catch degenerate Scatter getRayDirection - this happens when randomly generated vector is almost against HitPointNormal
+        // catch degenerate scatter getRayDirection - this happens when randomly generated vector is almost against HitPointNormal
         if (ScatterDirection.nearZero())
             ScatterDirection = Record.HitPointNormal;
 

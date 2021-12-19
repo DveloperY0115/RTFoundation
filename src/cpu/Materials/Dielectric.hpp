@@ -14,7 +14,7 @@ class Dielectric: public Material {
 public:
     Dielectric(double IndexOfRefraction) : ir(IndexOfRefraction) {}
 
-    virtual bool Scatter(
+    virtual bool scatter(
             const Ray& IncidentRay, const HitRecord& Record, Color& Attenuation, Ray& ScatteredRay
     ) const override {
         Attenuation = Color(1.0, 1.0, 1.0);

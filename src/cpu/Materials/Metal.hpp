@@ -16,7 +16,7 @@ public:
     // Constructor
     Metal(const Color& a, double f) : Albedo(a), Fuzziness(f < 1 ? f : 1) {}
 
-    virtual bool Scatter(
+    virtual bool scatter(
             const Ray& IncidentRay, const HitRecord& Record, Color& Attenuation, Ray& ScatteredRay
     ) const override
     {

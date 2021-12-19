@@ -12,17 +12,17 @@
 #include "Materials/Metal.hpp"
 #include "Materials/Dielectric.hpp"
 
-Color computeRayColor(const Ray& r, const Hittable& world, int depth) {
+Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
     HitRecord Record;
     // If we've exceeded the Ray bounce limit, no more light is gathered.
-    if (depth <= 0)
+    if (Depth <= 0)
             return Color(0, 0, 0);
 
-    if (world.Hit(r, 0.001, Infinity, Record)) {
-        Ray scatteredRay;
+    if (World.Hit(r, 0.001, Infinity, Record)) {
+        Ray ScatteredRay;
         Color Attenuation;
-        if (Record.MaterialPtr->Scatter(r, Record, Attenuation, scatteredRay))
-            return Attenuation * computeRayColor(scatteredRay, world, depth - 1);
+        if (Record.MaterialPtr->scatter(r, Record, Attenuation, ScatteredRay))
+            return Attenuation * computeRayColor(ScatteredRay, World, Depth - 1);
 
         // 'black body' <- the object absorbs all lights
         return Color(0, 0, 0);
@@ -93,10 +93,7 @@ int main() {
     const int MaxRecursion = 25;
 
     // set world
-
-    HittableList world;
-
-    world = generateRandomScene();
+    HittableList world = generateRandomScene();
 
     // set Camera
     Point3 LookFrom(13, 2, 3);

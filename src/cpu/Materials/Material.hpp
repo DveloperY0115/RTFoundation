@@ -20,7 +20,7 @@
 class Material
 {
 public:
-    virtual bool Scatter(
+    virtual bool scatter(
             const Ray& IncidentRay, const HitRecord& Record, Color& Attenuation, Ray& ScatteredRay
             ) const = 0;
 };
