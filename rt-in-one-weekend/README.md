@@ -1,7 +1,7 @@
 ray-tracing-in-one-weekend-cpp
 =============
 
-![cover_image](./media/img-1.21-book1-final.jpg)
+![cover_image](mediamg-1.21-book1-final.jpg)
 C++ Implementation of basic ray tracer based on the book [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html, "Ray Tracing in One Weekend") by [Peter Shirley](https://github.com/petershirley/home, "Github profile of Peter Shirley"). This project is written in C++ 14 and can be compiled with popular compiler systems such as Clang, MSVC, etc.
 
 [![Windows](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/windows.yml/badge.svg)](https://github.com/DveloperY0115/ray-tracing-in-one-weekend-cpp/actions/workflows/windows.yml)
