@@ -8,6 +8,7 @@
 #include "../rtweekend.hpp"
 
 class AABB {
+public:
     AABB() {}
     AABB(const Point3& A, const Point3& B)
     : Minimum(A), Maximum(B)
@@ -41,5 +42,19 @@ class AABB {
 public:
     Point3 Minimum, Maximum;
 };
+
+AABB computeSurroundingBox(AABB BoundingBox0, AABB BoundingBox1) {
+    Point3 LeftBoundary = Point3(
+            fmin(BoundingBox0.getMin().X(), BoundingBox1.getMin().X()),
+            fmin(BoundingBox0.getMin().Y(), BoundingBox1.getMin().Y()),
+            fmin(BoundingBox0.getMin().Z(), BoundingBox1.getMin().Z())
+            );
+    Point3 RightBoundary = Point3(
+            fmax(BoundingBox0.getMax().X(), BoundingBox1.getMax().X()),
+            fmax(BoundingBox0.getMax().Y(), BoundingBox1.getMax().Y()),
+            fmax(BoundingBox0.getMax().Z(), BoundingBox1.getMax().Z())
+            );
+    return AABB(LeftBoundary, RightBoundary);
+}
 
 #endif //RTFOUNDATION_AABB_HPP
