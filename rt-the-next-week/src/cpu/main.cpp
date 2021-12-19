@@ -12,6 +12,8 @@
 #include "Materials/Lambertian.hpp"
 #include "Materials/Metal.hpp"
 #include "Materials/Dielectric.hpp"
+#include "Textures/SolidColor.hpp"
+#include "Textures/CheckerTexture.hpp"
 
 Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
     HitRecord Record;
@@ -38,8 +40,11 @@ Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
 HittableList generateRandomScene() {
     HittableList world;
 
-    auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
-    world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, GroundMaterial));
+    // auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
+    // world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, GroundMaterial));
+
+    auto checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+    world.add(make_shared<Sphere>(Point3(0,-1000,0), 1000, make_shared<Lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
