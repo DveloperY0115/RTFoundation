@@ -14,7 +14,7 @@ public:
             Point3 LookFrom,
             Point3 LookAt,
             Vector3 UpVector,
-            double VerticalFOV, // Vertical field-of-view in degrees
+            double VerticalFOV,
             double AspectRatio,
             double Aperture,
             double FocusingDistance,
