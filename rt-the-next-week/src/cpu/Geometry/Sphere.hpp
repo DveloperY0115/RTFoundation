@@ -64,8 +64,6 @@ bool Sphere::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
             Record.HitPoint = Ray.getPointAt(Record.Depth);
             // here, we define a HitPointNormal vector to point outward
             Vector3 OutwardNormal = (Record.HitPoint - Center) / Radius;
-            // compare the getRayDirection of the Ray & OutwardNormal
-            // set the HitPointNormal, opposite to the getRayDirection where light came from
             Record.setFaceNormal(Ray, OutwardNormal);
             computeSphereUV(OutwardNormal, Record.u, Record.v);
             Record.MaterialPtr = MaterialPtr;
