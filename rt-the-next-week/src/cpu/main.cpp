@@ -87,10 +87,10 @@ int main() {
 
     // configure output image
     const auto AspectRatio = 16.0 / 9.0;
-    const int ImageWidth = 1600;
+    const int ImageWidth = 400;
     const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     const int SamplesPerPixel = 100;
-    const int MaxRecursion = 25;
+    const int MaxRecursion = 8;
 
     // set world
     HittableList world = generateRandomScene();
