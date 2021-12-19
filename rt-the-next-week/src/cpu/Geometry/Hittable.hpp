@@ -22,7 +22,7 @@ class Material;
 struct HitRecord {
 public:
     inline void setFaceNormal(const Ray& Ray, const Vector3& OutwardNormal) {
-        // front face is set to be true, if the HitPointNormal of the surface and incident Ray are opposite
+        // front face is set to be true, if the hit point normal of the surface and incident ray are opposite
         IsFrontFace = dotProduct(Ray.getRayDirection(), OutwardNormal) < 0;
         HitPointNormal = IsFrontFace ? OutwardNormal : -OutwardNormal;
     }
@@ -31,6 +31,7 @@ public:
     Vector3 HitPointNormal;
     shared_ptr<Material> MaterialPtr;
     double Depth;
+    double u, v; // UV-coordinate of the texture at the hit point
     bool IsFrontFace;
 };
 

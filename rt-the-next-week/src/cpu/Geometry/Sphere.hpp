@@ -21,6 +21,14 @@ public:
     bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const override;
     bool computeBoundingBox(double t0, double t1, AABB &OutputBoundingBox) const override;
 
+private:
+    static void computeSphereUV(const Point3& SurfacePoint, double& u, double& v) {
+        auto Theta = acos(-SurfacePoint.Y());
+        auto Phi = atan2(-SurfacePoint.Z(), SurfacePoint.X()) + Pi;
+
+        u = Phi / (2 * Pi);
+        v = Theta / Pi;
+    }
 public:
     Vector3 Center;
     double Radius;
@@ -55,10 +63,11 @@ bool Sphere::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
             // the point of the surface that was hit by the Ray
             Record.HitPoint = Ray.getPointAt(Record.Depth);
             // here, we define a HitPointNormal vector to point outward
-            Vector3 outward_normal = (Record.HitPoint - Center) / Radius;
-            // compare the getRayDirection of the Ray & outward_normal
+            Vector3 OutwardNormal = (Record.HitPoint - Center) / Radius;
+            // compare the getRayDirection of the Ray & OutwardNormal
             // set the HitPointNormal, opposite to the getRayDirection where light came from
-            Record.setFaceNormal(Ray, outward_normal);
+            Record.setFaceNormal(Ray, OutwardNormal);
+            computeSphereUV(OutwardNormal, Record.u, Record.v);
             Record.MaterialPtr = MaterialPtr;
             return true;
         }
@@ -69,8 +78,9 @@ bool Sphere::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Re
         if (temp < DepthMax && temp > DepthMin) {
             Record.Depth = temp;
             Record.HitPoint = Ray.getPointAt(Record.Depth);
-            Vector3 outward_normal = (Record.HitPoint - Center) / Radius;
-            Record.setFaceNormal(Ray, outward_normal);
+            Vector3 OutwardNormal = (Record.HitPoint - Center) / Radius;
+            Record.setFaceNormal(Ray, OutwardNormal);
+            computeSphereUV(OutwardNormal, Record.u, Record.v);
             Record.MaterialPtr = MaterialPtr;
             return true;
         }

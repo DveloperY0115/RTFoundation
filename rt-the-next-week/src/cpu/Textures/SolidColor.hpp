@@ -10,6 +10,7 @@
 class SolidColor : public Texture {
 public:
     SolidColor();
+    
     explicit SolidColor(Color Color)
     : ColorValue(Color)
     {
