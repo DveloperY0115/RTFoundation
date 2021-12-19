@@ -28,14 +28,14 @@ public:
     HittableList(shared_ptr<Hittable> object) { add(object); }
 
     /*
-     * Clear the std::vector objects that contains the shared_ptrs of 'Hittable' objects
+     * Clear the std::vector Objects that contains the shared_ptrs of 'Hittable' Objects
      */
-    void clear() { objects.clear(); }
+    void clear() { Objects.clear(); }
 
     /*
-     * Add an objects to std::vector objects
+     * Add an Objects to std::vector Objects
      */
-    void add(shared_ptr<Hittable> object) { objects.push_back(object); }
+    void add(shared_ptr<Hittable> object) { Objects.push_back(object); }
 
     /*
      * The member function hit, which is expected to be implemented in a derived class
@@ -43,8 +43,8 @@ public:
     virtual bool hit(const Ray &Ray, double DepthMin, double DepthMax, HitRecord &Record) const override;
 
 public:
-    // dynamic array that stores shard_ptr of <Hittable> objects
-    std::vector<shared_ptr<Hittable>> objects;
+    // dynamic array that stores shard_ptr of <Hittable> Objects
+    std::vector<shared_ptr<Hittable>> Objects;
 };
 
 bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const
@@ -54,7 +54,7 @@ bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitReco
     auto ClosestDepth = DepthMax;
 
     // TODO: Optimize this using BVH, kd-Tree, etc
-    for (const auto& object : objects)
+    for (const auto& object : Objects)
     {
         if (object->hit(Ray, DepthMin, ClosestDepth, TempRecord))
         {
