@@ -55,14 +55,6 @@ inline double generateRandomDouble()
     return distribution(generator);
 }
 
-/*
-inline double generateRandomDouble()
-{
-    // Returns a random real number in [0, 1).
-    return rand() / (RAND_MAX + 1.0);
-}
-*/
-
 /**
  * Generates a double type random number whose value lies between 'min' and 'max'
  *
@@ -74,6 +66,10 @@ inline double generateRandomDouble(double min, double max)
 {
     // Returns a random real number in [min, max)
     return min + (max-min) * generateRandomDouble();
+}
+
+inline int generateRandomInt(int min, int max) {
+    return static_cast<int>(generateRandomDouble(min, max+1));
 }
 
 /**
