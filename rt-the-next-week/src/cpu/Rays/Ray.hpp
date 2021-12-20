@@ -34,9 +34,9 @@ public:
         return Time;
     }
 
-    Vector3 getPointAt(double t) const
+    Vector3 getPointAt(double Depth) const
     {
-        return Origin + t * Direction;
+        return Origin + Depth * Direction;
     }
 
 public:

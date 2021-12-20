@@ -6,6 +6,7 @@
 #include "rtweekend.hpp"
 #include "Geometry/HittableList.hpp"
 #include "Geometry/Sphere.hpp"
+#include "Geometry/AABBRectangle.hpp"
 #include "Geometry/MovingSphere.hpp"
 #include "Geometry/BVH.hpp"
 #include "Colors/Colors.hpp"
@@ -13,6 +14,7 @@
 #include "Materials/Lambertian.hpp"
 #include "Materials/Metal.hpp"
 #include "Materials/Dielectric.hpp"
+#include "Materials/DiffuseLight.hpp"
 #include "Textures/SolidColor.hpp"
 #include "Textures/CheckerTexture.hpp"
 #include "Textures/ImageTexture.hpp"
@@ -157,6 +159,19 @@ HittableList generateEarth() {
     return HittableList(Globe);
 }
 
+HittableList generateSimpleLight() {
+    HittableList objects;
+
+    auto earthTexture = make_shared<ImageTexture>("../../../../data/earthmap.jpeg");
+    objects.add(make_shared<Sphere>(Point3(0,-1000,0), 1000, make_shared<Lambertian>(earthTexture)));
+    objects.add(make_shared<Sphere>(Point3(0,2,0), 2, make_shared<Lambertian>(earthTexture)));
+
+    auto DiffuseLightMat = make_shared<DiffuseLight>(Color(4,4,4));
+    objects.add(make_shared<XYRectangle>(3, 5, 1, 3, -2, DiffuseLightMat));
+
+    return objects;
+}
+
 int main() {
     // configure OpenMP
     omp_set_num_threads(8);
@@ -165,7 +180,7 @@ int main() {
     const auto AspectRatio = 16.0 / 9.0;
     const int ImageWidth = 400;
     const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
-    const int SamplesPerPixel = 100;
+    int SamplesPerPixel = 100;
     const int MaxRecursion = 8;
 
     // set Camera
@@ -178,7 +193,7 @@ int main() {
 
     // set world
     HittableList World;
-    int SceneSelector = 4;
+    int SceneSelector = 5;
 
     switch (SceneSelector) {
         case 0:
@@ -217,7 +232,12 @@ int main() {
 
         default:
         case 5:
-            BackgroundColor = Color(0.0, 0.0, 0.0);
+            World = generateSimpleLight();
+            SamplesPerPixel = 400;
+            BackgroundColor = Color(0,0,0);
+            LookFrom = Point3(26,3,6);
+            LookAt = Point3(0,2,0);
+            VerticalFOV = 20.0;
             break;
     }
 
@@ -242,7 +262,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer, SamplesPerPixel)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
