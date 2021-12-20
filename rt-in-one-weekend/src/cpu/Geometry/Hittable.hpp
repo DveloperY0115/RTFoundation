@@ -40,7 +40,7 @@ class Hittable
 {
 public:
     // virtual : the member function that is expected to be re-define in a derived class
-    virtual bool hit(const Ray& Ray, double DepthMin, double DepthMax, HitRecord& Record) const = 0;
+    virtual bool hit(const Ray& IncidentRay, double DepthMin, double DepthMax, HitRecord& Record) const = 0;
 };
 
 #endif //RTFOUNDATION_HITTABLE_HPP
