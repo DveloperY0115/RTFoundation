@@ -7,6 +7,7 @@
 #include "Geometry/HittableList.hpp"
 #include "Geometry/Sphere.hpp"
 #include "Geometry/AABBRectangle.hpp"
+#include "Geometry/Box.hpp"
 #include "Geometry/MovingSphere.hpp"
 #include "Geometry/BVH.hpp"
 #include "Colors/Colors.hpp"
@@ -189,6 +190,9 @@ HittableList generateCornellBox() {
     objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 0, white));
     objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 555, white));
     objects.add(make_shared<XYRectangle>(0, 555, 0, 555, 555, white));
+
+    objects.add(make_shared<Box>(Point3(130, 0, 65), Point3(295, 165, 230), white));
+    objects.add(make_shared<Box>(Point3(265, 0, 295), Point3(430, 330, 460), white));
 
     return objects;
 }
