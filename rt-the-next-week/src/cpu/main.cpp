@@ -17,9 +17,9 @@
 #include "Materials/Metal.hpp"
 #include "Materials/Dielectric.hpp"
 #include "Materials/DiffuseLight.hpp"
-#include "Textures/SolidColor.hpp"
 #include "Textures/CheckerTexture.hpp"
 #include "Textures/ImageTexture.hpp"
+#include "Volumes/ConstantMedium.hpp"
 
 Color computeRayColor(const Ray& r, const Color& BackgroundColor, const Hittable& World, int RecursionDepth) {
     HitRecord Record;
@@ -205,6 +205,35 @@ HittableList generateCornellBox() {
     return objects;
 }
 
+HittableList generateCornellSmoke() {
+    HittableList objects;
+
+    auto red   = make_shared<Lambertian>(Color(.65, .05, .05));
+    auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+    auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+    auto light = make_shared<DiffuseLight>(Color(7, 7, 7));
+
+    objects.add(make_shared<YZRectangle>(0, 555, 0, 555, 555, green));
+    objects.add(make_shared<YZRectangle>(0, 555, 0, 555, 0, red));
+    objects.add(make_shared<XZRectangle>(113, 443, 127, 432, 554, light));
+    objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 555, white));
+    objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 0, white));
+    objects.add(make_shared<XYRectangle>(0, 555, 0, 555, 555, white));
+
+    shared_ptr<Hittable> box1 = make_shared<Box>(Point3(0,0,0), Point3(165,330,165), white);
+    box1 = make_shared<YRotationInstance>(box1, 15);
+    box1 = make_shared<TranslateInstance>(box1, Vector3(265,0,295));
+
+    shared_ptr<Hittable> box2 = make_shared<Box>(Point3(0,0,0), Point3(165,165,165), white);
+    box2 = make_shared<YRotationInstance>(box2, -18);
+    box2 = make_shared<TranslateInstance>(box2, Vector3(130,0,65));
+
+    objects.add(make_shared<ConstantMedium>(box1, 0.01, Color(0,0,0)));
+    objects.add(make_shared<ConstantMedium>(box2, 0.01, Color(1,1,1)));
+
+    return objects;
+}
+
 int main() {
     // configure OpenMP
     omp_set_num_threads(8);
@@ -230,7 +259,7 @@ int main() {
     // set world
     BVHNode WorldBVH;
     HittableList World;
-    int SceneSelector = 6;
+    int SceneSelector = 4;
 
     switch (SceneSelector) {
         case 0:
@@ -277,13 +306,22 @@ int main() {
             VerticalFOV = 20.0;
             break;
 
-        default:
         case 6:
             World = generateCornellBox();
             AspectRatio = 1.0;
+            ImageWidth = 1600;
+            SamplesPerPixel = 5000;
+            BackgroundColor = Color(0,0,0);
+            LookFrom = Point3(278, 278, -800);
+            LookAt = Point3(278, 278, 0);
+            VerticalFOV = 40.0;
+            break;
+
+        case 7:
+            World = generateCornellSmoke();
+            AspectRatio = 1.0;
             ImageWidth = 600;
             SamplesPerPixel = 200;
-            BackgroundColor = Color(0,0,0);
             LookFrom = Point3(278, 278, -800);
             LookAt = Point3(278, 278, 0);
             VerticalFOV = 40.0;
