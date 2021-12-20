@@ -55,6 +55,7 @@ bool HittableList::hit(const Ray& Ray, double DepthMin, double DepthMax, HitReco
     bool HitSomething = false;
     auto ClosestDepth = DepthMax;
 
+    // Linear search on all primitives in the scene.
     for (const auto& object : Objects)
     {
         if (object->hit(Ray, DepthMin, ClosestDepth, TempRecord))

@@ -17,26 +17,25 @@
 #include "Textures/CheckerTexture.hpp"
 #include "Textures/ImageTexture.hpp"
 
-Color computeRayColor(const Ray& r, const Hittable& World, int Depth) {
+Color computeRayColor(const Ray& r, const Color& BackgroundColor, const Hittable& World, int RecursionDepth) {
     HitRecord Record;
     // If we've exceeded the Ray bounce limit, no more light is gathered.
-    if (Depth <= 0)
-            return Color(0, 0, 0);
-
-    if (World.hit(r, 0.001, Infinity, Record)) {
-        Ray ScatteredRay;
-        Color Attenuation;
-        if (Record.MaterialPtr->scatter(r, Record, Attenuation, ScatteredRay))
-            return Attenuation * computeRayColor(ScatteredRay, World, Depth - 1);
-
-        // 'black body' <- the object absorbs all lights
+    if (RecursionDepth <= 0)
         return Color(0, 0, 0);
-    }
 
-    // if the Ray didn'Depth hit any object, set the pixel color as background
-    Vector3 UnitDirection = normalize(r.getRayDirection());
-    auto t = 0.5*(UnitDirection.Y() + 1.0);
-    return (1.0 - t) * Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);
+    // If the ray did not hit anything, set its color as the background color.
+    if (!World.hit(r, 0.001, Infinity, Record))
+        return BackgroundColor;
+
+    Ray ScatteredRay;
+    Color Attenuation;
+    Color EmittedColor = Record.MaterialPtr->emit(Record.u, Record.v, Record.HitPoint);
+
+    // If the object hit by the ray does not scatter any secondary ray, it's a pure light source.
+    if (!Record.MaterialPtr->scatter(r, Record, Attenuation, ScatteredRay))
+        return EmittedColor;
+
+    return EmittedColor + Attenuation * computeRayColor(ScatteredRay, BackgroundColor, World, RecursionDepth - 1);
 }
 
 HittableList generateRandomScene() {
@@ -175,14 +174,16 @@ int main() {
     Vector3 UpVector;
     double VerticalFOV = 40.0;
     double Aperture = 0.0;
+    Color BackgroundColor(0.0, 0.0, 0.0);
 
     // set world
     HittableList World;
-    int SceneSelector = 3;
+    int SceneSelector = 4;
 
     switch (SceneSelector) {
         case 0:
             World = generateRandomScene();
+            BackgroundColor = Color(0.7, 0.8, 1.0);
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
@@ -191,6 +192,7 @@ int main() {
 
         case 1:
             World = generateRandomSceneMotionBlur();
+            BackgroundColor = Color(0.7, 0.8, 1.0);
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
@@ -199,16 +201,23 @@ int main() {
 
         case 2:
             World = generateTwoSpheres();
+            BackgroundColor = Color(0.7, 0.8, 1.0);
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
             break;
 
-        case 3:
+        case 4:
             World = generateEarth();
+            BackgroundColor = Color(0.7, 0.8, 1.0);
             LookFrom = Point3(13, 2, 3);
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
+            break;
+
+        default:
+        case 5:
+            BackgroundColor = Color(0.0, 0.0, 0.0);
             break;
     }
 
@@ -233,7 +242,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, ImageBuffer)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
@@ -243,7 +252,7 @@ int main() {
                     auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
                     auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
                     Ray r = cam.getRay(u, v);
-                    PixelColor += computeRayColor(r, World, MaxRecursion);
+                    PixelColor += computeRayColor(r, BackgroundColor, World, MaxRecursion);
                 }
                 writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
             }
