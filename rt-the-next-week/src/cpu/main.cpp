@@ -98,7 +98,7 @@ HittableList generateRandomSceneMotionBlur() {
     // auto GroundMaterial = make_shared<Lambertian>(Color(0.5, 0.5, 0.5));
     // world.add(make_shared<Sphere>(Point3(0, -1000, 0), 1000, GroundMaterial));
 
-    auto checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+    auto checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9), 10.0);
     world.add(make_shared<Sphere>(Point3(0,-1000,0), 1000, make_shared<Lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
@@ -145,7 +145,7 @@ HittableList generateRandomSceneMotionBlur() {
 HittableList generateTwoSpheres() {
     HittableList Objects;
 
-    auto Checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9));
+    auto Checker = make_shared<CheckerTexture>(Color(0.2, 0.3, 0.1), Color(0.9, 0.9, 0.9), 10.0);
 
     Objects.add(make_shared<Sphere>(Point3(0,-10, 0), 10, make_shared<Lambertian>(Checker)));
     Objects.add(make_shared<Sphere>(Point3(0, 10, 0), 10, make_shared<Lambertian>(Checker)));
@@ -298,6 +298,35 @@ HittableList generateFinalScene() {
     return objects;
 }
 
+HittableList generateWhitted() {
+    HittableList Objects;
+
+    // floor with red, yellow tile
+    auto FloorCheckerTexture = make_shared<CheckerTexture>(Color(1.0, 0.0, 0.0), Color(1.0, 1.0, 0.0), 1.0);
+    auto FloorMaterial = make_shared<Lambertian>(FloorCheckerTexture);
+    shared_ptr<Hittable> Floor = make_shared<Sphere>(Point3(0, -1005, 0), 1000, FloorMaterial);
+    Objects.add(Floor);
+
+    // hollow glass ball
+    auto GlassMaterial = make_shared<Dielectric>(1.5);
+    shared_ptr<Hittable> GlassBallOuter = make_shared<Sphere>(Point3(7.5, 4.0, 6.0), 2.5, GlassMaterial);
+    shared_ptr<Hittable> GlassBallInner = make_shared<Sphere>(Point3(7.5, 4.0, 6.0), -2.4, GlassMaterial);
+    Objects.add(GlassBallOuter);
+    Objects.add(GlassBallInner);
+
+    // metal ball
+    auto SilverMaterial = make_shared<Metal>(Color(192.0 / 255.0, 192.0 / 255.0, 192.0 / 255.0), 0);
+    shared_ptr<Hittable> SilverBall = make_shared<Sphere>(Point3(5.0, 2.5, 0.0), 2.5, SilverMaterial);
+    Objects.add(SilverBall);
+
+    // point light source
+    auto WhiteDiffuseLight = make_shared<DiffuseLight>(Color(15.0, 15.0, 15.0));
+    shared_ptr<Hittable> PointLight = make_shared<Sphere>(Point3(70.0, 70.0, 70.0), 30.0, WhiteDiffuseLight);
+    Objects.add(PointLight);
+
+    return Objects;
+}
+
 int main() {
     // configure OpenMP
     omp_set_num_threads(8);
@@ -323,7 +352,7 @@ int main() {
     // set world
     BVHNode WorldBVH;
     HittableList World;
-    int SceneSelector = 8;
+    int SceneSelector = 9;
 
     switch (SceneSelector) {
         case 0:
@@ -363,6 +392,7 @@ int main() {
 
         case 5:
             World = generateSimpleLight();
+            ImageWidth = 1600;
             SamplesPerPixel = 400;
             BackgroundColor = Color(0,0,0);
             LookFrom = Point3(26,3,6);
@@ -373,8 +403,8 @@ int main() {
         case 6:
             World = generateCornellBox();
             AspectRatio = 1.0;
-            ImageWidth = 1600;
-            SamplesPerPixel = 5000;
+            ImageWidth = 600;
+            SamplesPerPixel = 1000;
             BackgroundColor = Color(0,0,0);
             LookFrom = Point3(278, 278, -800);
             LookAt = Point3(278, 278, 0);
@@ -385,12 +415,13 @@ int main() {
             World = generateCornellSmoke();
             AspectRatio = 1.0;
             ImageWidth = 600;
-            SamplesPerPixel = 200;
+            SamplesPerPixel = 400;
             LookFrom = Point3(278, 278, -800);
             LookAt = Point3(278, 278, 0);
             VerticalFOV = 40.0;
             break;
 
+        default:
         case 8:
             World = generateFinalScene();
             AspectRatio = 1.0;
@@ -401,10 +432,21 @@ int main() {
             LookAt = Point3(278, 278, 0);
             VerticalFOV = 40.0;
             break;
+
+        case 9:
+            World = generateWhitted();
+            AspectRatio = 1.0;
+            ImageWidth = 800;
+            SamplesPerPixel = 400;
+            BackgroundColor = Color(0.7,0.8,1.0);
+            LookFrom = Point3(7.5, 4.0, 20);
+            LookAt = Point3(7.5, 4.0, 2.5);
+            VerticalFOV = 40.0;
+            break;
     }
 
     // Construct BVH using the HittableList instance
-    WorldBVH = BVHNode(World, TimeStart, TimeEnd);
+    // WorldBVH = BVHNode(World, TimeStart, TimeEnd);
 
     int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     UpVector = Vector3(0, 1, 0);
@@ -428,7 +470,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, WorldBVH, BackgroundColor, ImageBuffer, SamplesPerPixel, MaxRecursion)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer, SamplesPerPixel, MaxRecursion)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
@@ -438,7 +480,7 @@ int main() {
                     auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
                     auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
                     Ray r = cam.getRay(u, v);
-                    PixelColor += computeRayColor(r, BackgroundColor, WorldBVH, MaxRecursion);
+                    PixelColor += computeRayColor(r, BackgroundColor, World, MaxRecursion);
                 }
                 writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
             }
