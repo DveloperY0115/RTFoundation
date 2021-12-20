@@ -98,6 +98,7 @@ bool MovingSphere::computeBoundingBox(double t0, double t1, AABB& OutputBounding
             CenterPositionAt(t1) - Vector3(Radius, Radius, Radius),
             CenterPositionAt(t1) + Vector3(Radius, Radius, Radius)
             );
+    OutputBoundingBox = computeSurroundingBox(BoundingBoxAtStartPosition, BoundingBoxAtEndPosition);
     return true;
 }
 
