@@ -178,7 +178,7 @@ int main() {
 
     // set world
     HittableList World;
-    int SceneSelector = 0;
+    int SceneSelector = 3;
 
     switch (SceneSelector) {
         case 0:

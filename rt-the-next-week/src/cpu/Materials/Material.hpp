@@ -23,6 +23,10 @@ public:
     virtual bool scatter(
             const Ray& IncidentRay, const HitRecord& Record, Color& Attenuation, Ray& ScatteredRay
             ) const = 0;
+
+    virtual Color emit(double u, double v, const Point3& SurfacePoint) const {
+        return Color(0.0, 0.0, 0.0);
+    }
 };
 
 
