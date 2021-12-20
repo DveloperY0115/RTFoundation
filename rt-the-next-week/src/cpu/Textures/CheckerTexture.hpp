@@ -12,20 +12,20 @@ class CheckerTexture : public Texture {
 public:
     CheckerTexture();
 
-    CheckerTexture(shared_ptr<Texture> EvenTextureIn, shared_ptr<Texture> OddTextureIn)
-    : EvenTexture(EvenTextureIn), OddTexture(OddTextureIn)
+    CheckerTexture(shared_ptr<Texture> EvenTextureIn, shared_ptr<Texture> OddTextureIn, double Frequency_)
+    : EvenTexture(EvenTextureIn), OddTexture(OddTextureIn), Frequency(Frequency_)
     {
         // Do nothing.
     }
 
-    CheckerTexture(Color EvenColor, Color OddColor)
-    : EvenTexture(make_shared<SolidColor>(EvenColor)), OddTexture(make_shared<SolidColor>(OddColor))
+    CheckerTexture(Color EvenColor, Color OddColor, double Frequency_)
+    : EvenTexture(make_shared<SolidColor>(EvenColor)), OddTexture(make_shared<SolidColor>(OddColor)), Frequency(Frequency_)
     {
         // Do nothing.
     }
 
     Color getTexelColor(double u, double v, const Point3& SurfacePoint) const override {
-        auto Sines = sin(10 * SurfacePoint.X()) * sin(10* SurfacePoint.Y()) * sin(10* SurfacePoint.Z());
+        auto Sines = sin(Frequency * SurfacePoint.X()) * sin(Frequency * SurfacePoint.Y()) * sin(Frequency * SurfacePoint.Z());
         if (Sines < 0)
             return OddTexture->getTexelColor(u, v, SurfacePoint);
         else
@@ -34,6 +34,7 @@ public:
 
 public:
     shared_ptr<Texture> EvenTexture, OddTexture;
+    double Frequency;
 };
 
 #endif //RTFOUNDATION_CHECKERTEXTURE_HPP
