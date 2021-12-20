@@ -7,6 +7,7 @@
 #include "Geometry/HittableList.hpp"
 #include "Geometry/Sphere.hpp"
 #include "Geometry/AABBRectangle.hpp"
+#include "Geometry/TransformInstances.hpp"
 #include "Geometry/Box.hpp"
 #include "Geometry/MovingSphere.hpp"
 #include "Geometry/BVH.hpp"
@@ -191,8 +192,15 @@ HittableList generateCornellBox() {
     objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 555, white));
     objects.add(make_shared<XYRectangle>(0, 555, 0, 555, 555, white));
 
-    objects.add(make_shared<Box>(Point3(130, 0, 65), Point3(295, 165, 230), white));
-    objects.add(make_shared<Box>(Point3(265, 0, 295), Point3(430, 330, 460), white));
+    shared_ptr<Hittable> Box1 = make_shared<Box>(Point3(0, 0, 0), Point3(165, 330, 165), white);
+    Box1 = make_shared<YRotationInstance>(Box1, 15);
+    Box1 = make_shared<TranslateInstance>(Box1, Vector3(265,0,295));
+    objects.add(Box1);
+
+    shared_ptr<Hittable> Box2 = make_shared<Box>(Point3(0,0,0), Point3(165,165,165), white);
+    Box2 = make_shared<YRotationInstance>(Box2, -18);
+    Box2 = make_shared<TranslateInstance>(Box2, Vector3(130,0,65));
+    objects.add(Box2);
 
     return objects;
 }
@@ -207,6 +215,10 @@ int main() {
     int SamplesPerPixel = 100;
     int MaxRecursion = 8;
 
+    // set time
+    double TimeStart = 0.0;
+    double TimeEnd = 0.0;
+
     // set Camera
     Point3 LookFrom;
     Point3 LookAt;
@@ -216,6 +228,7 @@ int main() {
     Color BackgroundColor(0.0, 0.0, 0.0);
 
     // set world
+    BVHNode WorldBVH;
     HittableList World;
     int SceneSelector = 6;
 
@@ -236,6 +249,7 @@ int main() {
             LookAt = Point3(0, 0, 0);
             VerticalFOV = 20.0;
             Aperture = 0.1;
+            TimeEnd = 1.0;
             break;
 
         case 2:
@@ -276,6 +290,9 @@ int main() {
             break;
     }
 
+    // Construct BVH using the HittableList instance
+    WorldBVH = BVHNode(World, TimeStart, TimeEnd);
+
     int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     UpVector = Vector3(0, 1, 0);
     auto DistanceToFocus = 10.0;
@@ -298,7 +315,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer, SamplesPerPixel, MaxRecursion)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, WorldBVH, BackgroundColor, ImageBuffer, SamplesPerPixel, MaxRecursion)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
@@ -308,7 +325,7 @@ int main() {
                     auto u = (i + generateRandomDouble()) / (ImageWidth - 1);
                     auto v = (j + generateRandomDouble()) / (ImageHeight - 1);
                     Ray r = cam.getRay(u, v);
-                    PixelColor += computeRayColor(r, BackgroundColor, World, MaxRecursion);
+                    PixelColor += computeRayColor(r, BackgroundColor, WorldBVH, MaxRecursion);
                 }
                 writeColor(i, j, PixelColor, SamplesPerPixel, ImageWidth, ImageHeight, ImageBuffer);
             }
