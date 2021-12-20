@@ -169,6 +169,27 @@ HittableList generateSimpleLight() {
     auto DiffuseLightMat = make_shared<DiffuseLight>(Color(4,4,4));
     objects.add(make_shared<XYRectangle>(3, 5, 1, 3, -2, DiffuseLightMat));
 
+    //auto GlassMat = make_shared<Dielectric>(1.5);
+    // objects.add(make_shared<XYRectangle>(-100, 100, 0, 100, -2, GlassMat));
+
+    return objects;
+}
+
+HittableList generateCornellBox() {
+    HittableList objects;
+
+    auto red   = make_shared<Lambertian>(Color(.65, .05, .05));
+    auto white = make_shared<Lambertian>(Color(.73, .73, .73));
+    auto green = make_shared<Lambertian>(Color(.12, .45, .15));
+    auto light = make_shared<DiffuseLight>(Color(15, 15, 15));
+
+    objects.add(make_shared<YZRectangle>(0, 555, 0, 555, 555, green));
+    objects.add(make_shared<YZRectangle>(0, 555, 0, 555, 0, red));
+    objects.add(make_shared<XZRectangle>(213, 343, 227, 332, 554, light));
+    objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 0, white));
+    objects.add(make_shared<XZRectangle>(0, 555, 0, 555, 555, white));
+    objects.add(make_shared<XYRectangle>(0, 555, 0, 555, 555, white));
+
     return objects;
 }
 
@@ -177,11 +198,10 @@ int main() {
     omp_set_num_threads(8);
 
     // configure output image
-    const auto AspectRatio = 16.0 / 9.0;
-    const int ImageWidth = 400;
-    const int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
+    auto AspectRatio = 16.0 / 9.0;
+    int ImageWidth = 400;
     int SamplesPerPixel = 100;
-    const int MaxRecursion = 8;
+    int MaxRecursion = 8;
 
     // set Camera
     Point3 LookFrom;
@@ -193,7 +213,7 @@ int main() {
 
     // set world
     HittableList World;
-    int SceneSelector = 5;
+    int SceneSelector = 6;
 
     switch (SceneSelector) {
         case 0:
@@ -230,7 +250,6 @@ int main() {
             VerticalFOV = 20.0;
             break;
 
-        default:
         case 5:
             World = generateSimpleLight();
             SamplesPerPixel = 400;
@@ -239,8 +258,21 @@ int main() {
             LookAt = Point3(0,2,0);
             VerticalFOV = 20.0;
             break;
+
+        default:
+        case 6:
+            World = generateCornellBox();
+            AspectRatio = 1.0;
+            ImageWidth = 600;
+            SamplesPerPixel = 200;
+            BackgroundColor = Color(0,0,0);
+            LookFrom = Point3(278, 278, -800);
+            LookAt = Point3(278, 278, 0);
+            VerticalFOV = 40.0;
+            break;
     }
 
+    int ImageHeight = static_cast<int>(ImageWidth / AspectRatio);
     UpVector = Vector3(0, 1, 0);
     auto DistanceToFocus = 10.0;
 
@@ -262,7 +294,7 @@ int main() {
     // initialize image buffer
     int* ImageBuffer = new int[3 * ImageWidth * ImageHeight];
 
-    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer, SamplesPerPixel)
+    #pragma omp parallel default(none) firstprivate(ImageHeight, ImageWidth) shared(cam, World, BackgroundColor, ImageBuffer, SamplesPerPixel, MaxRecursion)
     {
         #pragma omp for // trace rays & compute pixel colors
         for (int j = ImageHeight - 1; j >= 0; --j) {
