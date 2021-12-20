@@ -17,7 +17,7 @@ bool compareBoundingBoxAlongZ(const shared_ptr<Hittable> HittableA, const shared
 
 class BVHNode : public Hittable {
 public:
-    BVHNode();
+    BVHNode() {}
     BVHNode(const HittableList& HittableList, double t0, double t1)
     : BVHNode(HittableList.Objects, 0, HittableList.Objects.size(),
               t0, t1)
